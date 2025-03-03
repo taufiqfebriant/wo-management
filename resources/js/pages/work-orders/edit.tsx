@@ -7,8 +7,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { format } from 'date-fns';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { format, parseISO } from 'date-fns';
 import { Calendar as CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import * as React from 'react';
 
@@ -18,48 +18,84 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: '/work-orders',
   },
   {
-    title: 'Create Work Order',
-    href: '/work-orders/create',
+    title: 'Edit Work Order',
+    href: '/work-orders/edit',
   },
 ];
 
-export default function CreateWorkOrder() {
-  const { data, setData, post, processing, errors } = useForm({
-    product_id: '',
-    quantity: '',
-    deadline: '',
-    user_id: '',
-  });
+type Product = {
+  id: number;
+  name: string;
+};
 
-  const page = usePage<{ products: { id: number; name: string }[]; users: { id: number; name: string }[] }>();
-  const { products, users } = page.props;
+type User = {
+  id: number;
+  name: string;
+};
+
+type WorkOrder = {
+  id: number;
+  number: string;
+  product: Product;
+  quantity: number;
+  deadline: string;
+  status: string;
+  operator: User;
+  created_at: string;
+  updated_at: string;
+};
+
+const statusOptions = [
+  { value: 0, label: 'Pending' },
+  { value: 1, label: 'In Progress' },
+  { value: 2, label: 'Completed' },
+  { value: 3, label: 'Canceled' },
+];
+
+export default function EditWorkOrder({
+  workOrder,
+  products,
+  users,
+}: {
+  workOrder: WorkOrder;
+  products: { id: number; name: string }[];
+  users: { id: number; name: string }[];
+}) {
+  const { data, setData, patch, processing, errors } = useForm({
+    product_id: workOrder.product.id,
+    quantity: workOrder.quantity,
+    deadline: workOrder.deadline,
+    status: statusOptions.find((option) => option.label === workOrder.status)?.value || 0,
+    user_id: workOrder.operator.id,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/work-orders');
+    patch(`/work-orders/${workOrder.id}`);
   };
 
   const [productOpen, setProductOpen] = React.useState(false);
   const [operatorOpen, setOperatorOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date>();
+  const [statusOpen, setStatusOpen] = React.useState(false);
+  const [date, setDate] = React.useState<Date | undefined>(parseISO(workOrder.deadline));
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Create Work Order" />
+      <Head title="Edit Work Order" />
 
       <div className="px-4 py-6">
         <div className="space-y-0.5">
-          <h2 className="text-xl font-semibold tracking-tight">Create Work Order</h2>
-          <p className="text-muted-foreground text-sm">Fill out the form below to create a new work order.</p>
+          <h2 className="text-xl font-semibold tracking-tight">Edit Work Order</h2>
+          <p className="text-muted-foreground text-sm">Update the details of the work order below</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="grid gap-2">
-            <Label htmlFor="product_id">Product</Label>
+            <Label htmlFor="product">Product</Label>
             <Popover open={productOpen} onOpenChange={setProductOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={productOpen} className="w-full justify-between">
-                  {data.product_id ? products.find((product) => product.id === Number(data.product_id))?.name : 'Select product'}
+                  {data.product_id ? products.find((product) => product.id === data.product_id)?.name : 'Select product'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -74,7 +110,7 @@ export default function CreateWorkOrder() {
                           key={product.id}
                           value={product.id.toString()}
                           onSelect={(currentValue) => {
-                            setData('product_id', currentValue === data.product_id ? '' : currentValue);
+                            setData('product_id', currentValue === String(data.product_id) ? 0 : Number(currentValue));
                             setProductOpen(false);
                           }}
                         >
@@ -92,7 +128,7 @@ export default function CreateWorkOrder() {
 
           <div className="grid gap-2">
             <Label htmlFor="quantity">Quantity</Label>
-            <Input id="quantity" type="number" value={data.quantity} onChange={(e) => setData('quantity', e.target.value)} required />
+            <Input id="quantity" type="number" value={data.quantity} onChange={(e) => setData('quantity', Number(e.target.value))} required />
             {errors.quantity && <div className="text-red-600">{errors.quantity}</div>}
           </div>
 
@@ -121,11 +157,47 @@ export default function CreateWorkOrder() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="user_id">Operator</Label>
+            <Label htmlFor="status">Status</Label>
+            <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" role="combobox" aria-expanded={statusOpen} className="w-full justify-between">
+                  {statusOptions.find((option) => option.value === data.status)?.label || 'Select status'}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Search status..." />
+                  <CommandList>
+                    <CommandEmpty>No status found.</CommandEmpty>
+                    <CommandGroup>
+                      {statusOptions.map((option) => (
+                        <CommandItem
+                          key={option.value}
+                          value={option.value.toString()}
+                          onSelect={(currentValue) => {
+                            setData('status', Number(currentValue));
+                            setStatusOpen(false);
+                          }}
+                        >
+                          <Check className={cn('mr-2 h-4 w-4', data.status === option.value ? 'opacity-100' : 'opacity-0')} />
+                          {option.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            {errors.status && <div className="text-red-600">{errors.status}</div>}
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="operator">Operator</Label>
             <Popover open={operatorOpen} onOpenChange={setOperatorOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={operatorOpen} className="w-full justify-between">
-                  {data.user_id ? users.find((user) => user.id === Number(data.user_id))?.name : 'Select operator'}
+                  {data.user_id ? users.find((user) => user.id === data.user_id)?.name : 'Select operator'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -140,7 +212,7 @@ export default function CreateWorkOrder() {
                           key={user.id}
                           value={user.id.toString()}
                           onSelect={(currentValue) => {
-                            setData('user_id', currentValue === data.user_id ? '' : currentValue);
+                            setData('user_id', currentValue === String(data.user_id) ? 0 : Number(currentValue));
                             setOperatorOpen(false);
                           }}
                         >
@@ -162,7 +234,7 @@ export default function CreateWorkOrder() {
             </Button>
 
             <Button type="submit" disabled={processing}>
-              Create
+              Update
             </Button>
           </div>
         </form>
