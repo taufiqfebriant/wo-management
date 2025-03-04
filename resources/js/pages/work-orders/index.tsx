@@ -10,6 +10,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,13 +20,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, PaginationResponse, SharedData } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { format } from 'date-fns';
+import { CalendarIcon, Check, ChevronsUpDown, MoreHorizontal } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from './data-table';
 
@@ -57,11 +63,21 @@ type WorkOrder = {
   updated_at: string;
 };
 
+const statusOptions = [
+  { value: 0, label: 'Pending' },
+  { value: 1, label: 'In Progress' },
+  { value: 2, label: 'Completed' },
+  { value: 3, label: 'Canceled' },
+];
+
 export default function WorkOrders() {
-  const page = usePage<SharedData & { workOrders: PaginationResponse<WorkOrder> }>();
+  const page = usePage<SharedData & { workOrders: PaginationResponse<WorkOrder>; filters: { status?: number; deadline?: string } }>();
   const { message } = page.props.flash;
-  const { workOrders } = page.props;
+  const { workOrders, filters } = page.props;
   const { delete: destroy, processing } = useForm();
+
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(filters.deadline ? new Date(filters.deadline) : undefined);
 
   useEffect(() => {
     if (message) {
@@ -148,6 +164,14 @@ export default function WorkOrders() {
     [destroy, processing],
   );
 
+  const handleFilterChange = (key: string, value: string) => {
+    const query = { ...filters, [key]: value };
+    router.get('/work-orders', query, {
+      preserveState: true,
+      replace: true,
+    });
+  };
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Work Orders" />
@@ -162,6 +186,66 @@ export default function WorkOrders() {
           <Button asChild>
             <Link href="/work-orders/create">Create</Link>
           </Button>
+        </div>
+
+        <div className="mt-6 flex space-x-4">
+          <div className="grid gap-2">
+            <Label htmlFor="status">Status</Label>
+            <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" role="combobox" aria-expanded={statusOpen} className="w-full justify-between">
+                  {statusOptions.find((option) => option.value === filters.status)?.label || 'Select status'}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Search status..." />
+                  <CommandList>
+                    <CommandEmpty>No status found.</CommandEmpty>
+                    <CommandGroup>
+                      {statusOptions.map((option) => (
+                        <CommandItem
+                          key={option.value}
+                          value={option.value.toString()}
+                          onSelect={(currentValue) => {
+                            handleFilterChange('status', currentValue);
+                            setStatusOpen(false);
+                          }}
+                        >
+                          <Check className={cn('mr-2 h-4 w-4', filters.status === option.value ? 'opacity-100' : 'opacity-0')} />
+                          {option.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="deadline">Deadline</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, 'PPP') : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(selectedDate) => {
+                    setDate(selectedDate);
+                    handleFilterChange('deadline', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
         <div className="mt-6" />

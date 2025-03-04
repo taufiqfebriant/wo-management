@@ -15,11 +15,23 @@ class WorkOrderController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index()
+	public function index(Request $request)
 	{
-		$workOrders = WorkOrder::with(['product', 'user'])->orderBy('updated_at', 'desc')->orderBy('id', 'desc')->paginate(10);
+		$query = WorkOrder::with(['product', 'user'])->orderBy('updated_at', 'desc')->orderBy('id', 'desc');
+
+		if ($request->has('status')) {
+			$query->where('status', $request->input('status'));
+		}
+
+		if ($request->has('deadline')) {
+			$query->whereDate('deadline', $request->input('deadline'));
+		}
+
+		$workOrders = $query->paginate(10)->withQueryString();
+
 		return Inertia::render('work-orders/index', [
 			'workOrders' => WorkOrderResource::collection($workOrders),
+			'filters' => $request->only(['status', 'deadline']),
 		]);
 	}
 
