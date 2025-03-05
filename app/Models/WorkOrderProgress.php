@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class WorkOrderProgress extends Model
 {
-	protected $fillable = ['work_order_id', 'user_id', 'progress_notes'];
+	protected $fillable = [
+		'work_order_id',
+		'user_id',
+		'progress_notes'
+	];
 
 	public function workOrder()
 	{

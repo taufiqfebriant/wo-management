@@ -142,6 +142,9 @@ export default function WorkOrders() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href={`/work-orders/${ctx.row.original.id}`}>View Details</Link>
+                </DropdownMenuItem>
                 {auth.user.roles.some((role) => role.name === 'Production Manager') && (
                   <>
                     <DropdownMenuItem asChild>
@@ -168,7 +171,7 @@ export default function WorkOrders() {
                     </AlertDialog>
                   </>
                 )}
-                {auth.user.roles.some((role) => role.name === 'Operator') && (
+                {auth.user.roles.some((role) => role.name === 'Operator') && ctx.row.original.status !== 'Completed' ? (
                   <>
                     <DropdownMenuItem asChild>
                       <Link href={`/work-orders/${ctx.row.original.id}/update-status`}>Update Status</Link>
@@ -177,7 +180,7 @@ export default function WorkOrders() {
                       <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`}>Add Progress Note</Link>
                     </DropdownMenuItem>
                   </>
-                )}
+                ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
           );

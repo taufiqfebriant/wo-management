@@ -24,7 +24,7 @@ type WorkOrder = {
 
 export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder }) {
   const { data, setData, post, processing, errors } = useForm({
-    note: '',
+    progress_note: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -44,9 +44,9 @@ export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder })
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="grid gap-2">
-            <Label htmlFor="note">Note</Label>
-            <Input id="note" type="text" value={data.note} onChange={(e) => setData('note', e.target.value)} required />
-            {errors.note && <div className="text-red-600">{errors.note}</div>}
+            <Label htmlFor="progress_note">Progress Note</Label>
+            <Input id="progress_note" type="text" value={data.progress_note} onChange={(e) => setData('progress_note', e.target.value)} required />
+            {errors.progress_note && <div className="text-red-600">{errors.progress_note}</div>}
           </div>
 
           <div className="flex justify-between">

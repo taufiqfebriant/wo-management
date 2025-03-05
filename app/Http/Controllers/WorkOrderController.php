@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderProgress;
+use App\Models\WorkOrderUpdate;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -87,9 +88,22 @@ class WorkOrderController extends Controller
 	/**
 	 * Display the specified resource.
 	 */
-	public function show(string $id)
+	public function show(WorkOrder $workOrder)
 	{
-		//
+		return Inertia::render('work-orders/show', [
+			'workOrder' => new WorkOrderResource(
+				$workOrder->load([
+					'product',
+					'user',
+					'workOrderProgress' => function ($query) {
+						$query->with('user')->latest();
+					},
+					'workOrderUpdates' => function ($query) {
+						$query->with('user')->latest();
+					}
+				])
+			),
+		]);
 	}
 
 	/**
@@ -141,7 +155,9 @@ class WorkOrderController extends Controller
 	public function editStatus(WorkOrder $workOrder)
 	{
 		return Inertia::render('work-orders/update-status', [
-			'workOrder' => new WorkOrderResource($workOrder),
+			'workOrder' => new WorkOrderResource($workOrder->load(['workOrderUpdates' => function ($query) {
+				$query->latest()->take(1);
+			}])),
 		]);
 	}
 
@@ -152,26 +168,18 @@ class WorkOrderController extends Controller
 	{
 		$validated = $request->validate([
 			'status' => 'required|integer|in:' . implode(',', [WorkOrder::IN_PROGRESS, WorkOrder::COMPLETED]),
-			'quantity' => 'required|integer|min:1',
+			'quantity_processed' => 'required|integer|min:1|max:' . $workOrder->quantity,
 		]);
 
-		$workOrder->update([
-			'status' => $validated['status'],
-			'quantity' => $validated['quantity'],
-		]);
-
-		if ($validated['status'] == WorkOrder::IN_PROGRESS) {
-			$workOrder->update(['in_progress_at' => now()]);
-		} elseif ($validated['status'] == WorkOrder::COMPLETED) {
-			$workOrder->update(['completed_at' => now()]);
-		}
-
-		WorkOrderProgress::create([
+		WorkOrderUpdate::create([
 			'work_order_id' => $workOrder->id,
-			'status' => $validated['status'],
-			'quantity' => $validated['quantity'],
-			'note' => null,
+			'user_id' => $request->user()->id,
+			'previous_status' => $workOrder->status,
+			'new_status' => $validated['status'],
+			'quantity_processed' => $validated['quantity_processed'],
 		]);
+
+		$workOrder->update(['status' => $validated['status']]);
 
 		return redirect()->route('work-orders.index')->with('message', 'Work order status updated successfully.');
 	}
@@ -191,17 +199,21 @@ class WorkOrderController extends Controller
 	 */
 	public function storeProgress(Request $request, WorkOrder $workOrder)
 	{
+		// Validate work order status first
+		if ($workOrder->status !== WorkOrder::IN_PROGRESS) {
+			return redirect()->back()->with('error', 'Progress notes can only be added when work order is in progress.');
+		}
+
 		$validated = $request->validate([
-			'note' => 'required|string',
+			'progress_note' => 'required|string',
 		]);
 
 		WorkOrderProgress::create([
 			'work_order_id' => $workOrder->id,
-			'status' => WorkOrder::IN_PROGRESS,
-			'quantity' => $workOrder->quantity,
-			'note' => $validated['note'],
+			'user_id' => $request->user()->id,
+			'progress_notes' => $validated['progress_note'],
 		]);
 
-		return redirect()->route('work-orders.index', $workOrder)->with('message', 'Progress note added successfully.');
+		return redirect()->route('work-orders.index')->with('message', 'Progress note added successfully.');
 	}
 }
