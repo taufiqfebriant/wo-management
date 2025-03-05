@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Box, ClipboardList, LayoutGrid } from 'lucide-react';
+import { Box, ClipboardList, FileText, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -22,6 +22,21 @@ const mainNavItems: NavItem[] = [
     title: 'Work Orders',
     url: '/work-orders',
     icon: ClipboardList,
+  },
+  {
+    title: 'Reports',
+    url: '/reports',
+    icon: FileText,
+    items: [
+      {
+        title: 'Work Order Summary',
+        url: '/reports/work-order-summary',
+      },
+      {
+        title: 'Operator Performance',
+        url: '/reports/operator-performance',
+      },
+    ],
   },
 ];
 

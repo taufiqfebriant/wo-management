@@ -19,6 +19,7 @@ export interface NavItem {
   url: string;
   icon?: LucideIcon | null;
   isActive?: boolean;
+  items?: NavItem[];
 }
 
 export interface SharedData {
@@ -65,3 +66,22 @@ export type PaginationResponse<T> = {
     }[];
   };
 };
+
+export interface WorkOrderSummary {
+  product_name: string;
+  pending_count: number;
+  in_progress_count: number;
+  completed_count: number;
+  canceled_count: number;
+  pending_quantity: number;
+  in_progress_quantity: number;
+  completed_quantity: number;
+  canceled_quantity: number;
+}
+
+export interface OperatorPerformance {
+  operator_name: string;
+  product_name: string;
+  completed_orders: number;
+  completed_quantity: number;
+}
