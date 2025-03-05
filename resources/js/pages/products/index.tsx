@@ -80,6 +80,9 @@ export default function Products() {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
+                  <Link href={`/products/${ctx.row.original.id}`}>View Details</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href={`/products/${ctx.row.original.id}/edit`}>Edit</Link>
                 </DropdownMenuItem>
                 <AlertDialog>

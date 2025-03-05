@@ -30,38 +30,22 @@ export default function WorkOrderSummaryReport({ summary }: Props) {
       {
         id: 'pending',
         header: 'Pending',
-        cell: (ctx) => (
-          <div className="text-right">
-            {ctx.row.original.pending_count} ({ctx.row.original.pending_quantity})
-          </div>
-        ),
+        cell: (ctx) => `${ctx.row.original.pending_count} (${ctx.row.original.pending_quantity ?? 0} units)`,
       },
       {
         id: 'in_progress',
         header: 'In Progress',
-        cell: (ctx) => (
-          <div className="text-right">
-            {ctx.row.original.in_progress_count} ({ctx.row.original.in_progress_quantity})
-          </div>
-        ),
+        cell: (ctx) => `${ctx.row.original.in_progress_count} (${ctx.row.original.in_progress_quantity ?? 0} units)`,
       },
       {
         id: 'completed',
         header: 'Completed',
-        cell: (ctx) => (
-          <div className="text-right">
-            {ctx.row.original.completed_count} ({ctx.row.original.completed_quantity})
-          </div>
-        ),
+        cell: (ctx) => `${ctx.row.original.completed_count} (${ctx.row.original.completed_quantity ?? 0} units)`,
       },
       {
         id: 'canceled',
         header: 'Canceled',
-        cell: (ctx) => (
-          <div className="text-right">
-            {ctx.row.original.canceled_count} ({ctx.row.original.canceled_quantity})
-          </div>
-        ),
+        cell: (ctx) => `${ctx.row.original.canceled_count} (${ctx.row.original.canceled_quantity ?? 0} units)`,
       },
     ],
     [],

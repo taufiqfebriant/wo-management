@@ -1,8 +1,9 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 
 type WorkOrderProgress = {
@@ -64,6 +65,11 @@ export default function ShowWorkOrder({ workOrder }: { workOrder: WorkOrder }) {
       <Head title={`Work Order ${workOrder.number}`} />
 
       <div className="space-y-8 px-4 py-6">
+        <div className="space-y-0.5">
+          <h2 className="text-xl font-semibold tracking-tight">Work Order Details</h2>
+          <p className="text-muted-foreground text-sm">View the details of the work order</p>
+        </div>
+
         {/* Work Order Details */}
         <Card>
           <CardHeader>
@@ -147,6 +153,10 @@ export default function ShowWorkOrder({ workOrder }: { workOrder: WorkOrder }) {
             </div>
           </CardContent>
         </Card>
+
+        <Button variant="outline" asChild>
+          <Link href="/products">Back</Link>
+        </Button>
       </div>
     </AppLayout>
   );

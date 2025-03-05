@@ -30,16 +30,17 @@ export default function OperatorPerformanceReport({ performance }: Props) {
       {
         accessorKey: 'product_name',
         header: 'Product',
+        cell: (ctx) => `${ctx.row.original.product_name ?? '-'}`,
       },
       {
         accessorKey: 'completed_orders',
         header: 'Completed Orders',
-        cell: (ctx) => <div className="text-right">{ctx.row.original.completed_orders}</div>,
+        cell: (ctx) => `${ctx.row.original.completed_orders ?? 0}`,
       },
       {
         accessorKey: 'completed_quantity',
         header: 'Total Quantity',
-        cell: (ctx) => <div className="text-right">{ctx.row.original.completed_quantity}</div>,
+        cell: (ctx) => `${ctx.row.original.completed_quantity ?? 0} units`,
       },
     ],
     [],

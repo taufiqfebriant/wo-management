@@ -8,7 +8,9 @@ use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function () {
 	Route::get('/', function () {
-		return Inertia::render('dashboard');
+		return Inertia::render('dashboard', [
+			'appName' => config('app.name')
+		]);
 	})->name('dashboard');
 
 	Route::resource('products', ProductController::class);
