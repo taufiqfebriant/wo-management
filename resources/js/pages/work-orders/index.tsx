@@ -290,9 +290,7 @@ export default function WorkOrders() {
           </div>
 
           <div className="flex items-end space-x-2">
-            <Button variant="outline" onClick={applyFilters}>
-              Apply
-            </Button>
+            <Button onClick={applyFilters}>Apply</Button>
             <Button variant="outline" onClick={clearFilters}>
               Clear
             </Button>
