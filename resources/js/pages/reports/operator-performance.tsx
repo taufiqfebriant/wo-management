@@ -1,12 +1,13 @@
+import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type OperatorPerformance } from '@/types';
+import { type BreadcrumbItem, type OperatorPerformance, type PaginationResponse2 } from '@/types';
 import { Head } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { DataTable } from './data-table';
 
 interface Props {
-  performance: OperatorPerformance[];
+  performance: PaginationResponse2<OperatorPerformance>;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -60,7 +61,25 @@ export default function OperatorPerformanceReport({ performance }: Props) {
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={performance} pageCount={1} rowCount={performance.length} />
+        <DataTable columns={columns} data={performance.data} pageCount={performance.last_page} rowCount={performance.total} />
+
+        <div className="mt-4 flex justify-end">
+          <Pagination className="mx-[unset] w-[unset]">
+            <PaginationContent>
+              {performance.links.map((link) => (
+                <PaginationItem key={link.label}>
+                  <PaginationLink
+                    href={link.url ?? '#'}
+                    isActive={link.active}
+                    dangerouslySetInnerHTML={{ __html: link.label }}
+                    size={link.label.toLowerCase().includes('previous') || link.label.toLowerCase().includes('next') ? 'default' : 'icon'}
+                    {...(!link.url || link.active ? { as: 'button', disabled: true } : {})}
+                  />
+                </PaginationItem>
+              ))}
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </AppLayout>
   );

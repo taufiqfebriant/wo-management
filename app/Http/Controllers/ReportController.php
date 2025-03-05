@@ -31,7 +31,7 @@ class ReportController extends Controller
 			->leftJoin('work_orders', 'products.id', '=', 'work_orders.product_id')
 			->groupBy('products.id', 'products.name')
 			->orderBy('products.name')
-			->get();
+			->paginate(10);
 
 		return Inertia::render('reports/work-order-summary', [
 			'summary' => $summary
@@ -57,7 +57,7 @@ class ReportController extends Controller
 			->groupBy('users.id', 'users.name', 'products.id', 'products.name')
 			->orderBy('users.name')
 			->orderBy('products.name')
-			->get();
+			->paginate(10);
 
 		return Inertia::render('reports/operator-performance', [
 			'performance' => $performance

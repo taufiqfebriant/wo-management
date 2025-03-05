@@ -1,12 +1,13 @@
+import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type WorkOrderSummary } from '@/types';
+import { type BreadcrumbItem, type PaginationResponse2, type WorkOrderSummary } from '@/types';
 import { Head } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { DataTable } from './data-table';
 
 interface Props {
-  summary: WorkOrderSummary[];
+  summary: PaginationResponse2<WorkOrderSummary>;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -65,7 +66,25 @@ export default function WorkOrderSummaryReport({ summary }: Props) {
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={summary} pageCount={1} rowCount={summary.length} />
+        <DataTable columns={columns} data={summary.data} pageCount={summary.last_page} rowCount={summary.total} />
+
+        <div className="mt-4 flex justify-end">
+          <Pagination className="mx-[unset] w-[unset]">
+            <PaginationContent>
+              {summary.links.map((link) => (
+                <PaginationItem key={link.label}>
+                  <PaginationLink
+                    href={link.url ?? '#'}
+                    isActive={link.active}
+                    dangerouslySetInnerHTML={{ __html: link.label }}
+                    size={link.label.toLowerCase().includes('previous') || link.label.toLowerCase().includes('next') ? 'default' : 'icon'}
+                    {...(!link.url || link.active ? { as: 'button', disabled: true } : {})}
+                  />
+                </PaginationItem>
+              ))}
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </AppLayout>
   );
