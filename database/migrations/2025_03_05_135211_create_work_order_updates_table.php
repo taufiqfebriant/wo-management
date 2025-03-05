@@ -11,14 +11,13 @@ return new class extends Migration
 	 */
 	public function up(): void
 	{
-		Schema::create('work_orders', function (Blueprint $table) {
+		Schema::create('work_order_updates', function (Blueprint $table) {
 			$table->id();
-			$table->string('number')->unique();
-			$table->foreignId('product_id')->constrained();
-			$table->integer('quantity');
-			$table->timestamp('deadline');
-			$table->unsignedTinyInteger('status');
-			$table->foreignId('user_id')->constrained('users');
+			$table->foreignId('work_order_id')->constrained();
+			$table->foreignId('user_id')->constrained();
+			$table->unsignedTinyInteger('previous_status');
+			$table->unsignedTinyInteger('new_status');
+			$table->unsignedInteger('quantity_processed')->nullable();
 			$table->timestamps();
 			$table->softDeletes();
 		});
@@ -29,6 +28,6 @@ return new class extends Migration
 	 */
 	public function down(): void
 	{
-		Schema::dropIfExists('work_orders');
+		Schema::dropIfExists('work_order_updates');
 	}
 };

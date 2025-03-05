@@ -46,4 +46,19 @@ class User extends Authenticatable
 			'password' => 'hashed',
 		];
 	}
+
+	public function workOrders()
+	{
+		return $this->hasMany(WorkOrder::class);
+	}
+
+	public function workOrderUpdates()
+	{
+		return $this->hasMany(WorkOrderUpdate::class);
+	}
+
+	public function workOrderProgress()
+	{
+		return $this->hasMany(WorkOrderProgress::class);
+	}
 }

@@ -10,8 +10,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { DateTimePicker } from '@/components/ui/datetime-picker';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,8 +28,8 @@ import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, PaginationResponse, SharedData } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { CalendarIcon, Check, ChevronsUpDown, MoreHorizontal } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
+import { Check, ChevronsUpDown, MoreHorizontal } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { DataTable } from './data-table';
@@ -49,6 +49,7 @@ type Product = {
 type User = {
   id: number;
   name: string;
+  roles: { id: number; name: string }[];
 };
 
 type WorkOrder = {
@@ -71,13 +72,21 @@ const statusOptions = [
 ];
 
 export default function WorkOrders() {
-  const page = usePage<SharedData & { workOrders: PaginationResponse<WorkOrder>; filters: { status?: number; deadline?: string } }>();
+  const page = usePage<
+    SharedData & {
+      workOrders: PaginationResponse<WorkOrder>;
+      filters: { status?: number; start_deadline?: string; end_deadline?: string };
+      auth: { user: User };
+    }
+  >();
   const { message } = page.props.flash;
-  const { workOrders, filters } = page.props;
+  const { workOrders, filters, auth } = page.props;
   const { delete: destroy, processing } = useForm();
 
   const [statusOpen, setStatusOpen] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(filters.deadline ? new Date(filters.deadline) : undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(filters.start_deadline ? parseISO(filters.start_deadline) : undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(filters.end_deadline ? parseISO(filters.end_deadline) : undefined);
+  const [selectedStatus, setSelectedStatus] = useState<number | undefined>(filters.status);
 
   useEffect(() => {
     if (message) {
@@ -133,40 +142,69 @@ export default function WorkOrders() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href={`/work-orders/${ctx.row.original.id}/edit`}>Edit</Link>
-                </DropdownMenuItem>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the work order and remove its data from our servers.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => destroy(`/work-orders/${ctx.row.original.id}`)} disabled={processing}>
-                        Continue
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                {auth.user.roles.some((role) => role.name === 'Production Manager') && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/work-orders/${ctx.row.original.id}/edit`}>Edit</Link>
+                    </DropdownMenuItem>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the work order and remove its data from our servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => destroy(`/work-orders/${ctx.row.original.id}`)} disabled={processing}>
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
+                )}
+                {auth.user.roles.some((role) => role.name === 'Operator') && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/work-orders/${ctx.row.original.id}/update-status`}>Update Status</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`}>Add Progress Note</Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           );
         },
       },
     ],
-    [destroy, processing],
+    [auth.user.roles, destroy, processing],
   );
 
-  const handleFilterChange = (key: string, value: string) => {
-    const query = { ...filters, [key]: value };
+  const applyFilters = () => {
+    const query = {
+      status: selectedStatus,
+      start_deadline: startDate ? format(startDate, 'yyyy-MM-dd HH:mm:ss') : undefined,
+      end_deadline: endDate ? format(endDate, 'yyyy-MM-dd HH:mm:ss') : undefined,
+    };
     router.get('/work-orders', query, {
+      preserveState: true,
+      replace: true,
+    });
+  };
+
+  const clearFilters = () => {
+    setSelectedStatus(undefined);
+    setStartDate(undefined);
+    setEndDate(undefined);
+
+    router.get('/work-orders', undefined, {
       preserveState: true,
       replace: true,
     });
@@ -188,63 +226,73 @@ export default function WorkOrders() {
           </Button>
         </div>
 
-        <div className="mt-6 flex space-x-4">
-          <div className="grid gap-2">
-            <Label htmlFor="status">Status</Label>
-            <Popover open={statusOpen} onOpenChange={setStatusOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" role="combobox" aria-expanded={statusOpen} className="w-full justify-between">
-                  {statusOptions.find((option) => option.value === filters.status)?.label || 'Select status'}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
-                <Command>
-                  <CommandInput placeholder="Search status..." />
-                  <CommandList>
-                    <CommandEmpty>No status found.</CommandEmpty>
-                    <CommandGroup>
-                      {statusOptions.map((option) => (
-                        <CommandItem
-                          key={option.value}
-                          value={option.value.toString()}
-                          onSelect={(currentValue) => {
-                            handleFilterChange('status', currentValue);
-                            setStatusOpen(false);
-                          }}
-                        >
-                          <Check className={cn('mr-2 h-4 w-4', filters.status === option.value ? 'opacity-100' : 'opacity-0')} />
-                          {option.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+        <div className="mt-6 flex justify-between space-x-4">
+          <div className="flex space-x-4">
+            <div className="grid gap-2">
+              <Label htmlFor="status">Status</Label>
+              <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" role="combobox" aria-expanded={statusOpen} className="w-full justify-between">
+                    {statusOptions.find((option) => option.value === selectedStatus)?.label || 'Select status'}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search status..." />
+                    <CommandList>
+                      <CommandEmpty>No status found.</CommandEmpty>
+                      <CommandGroup>
+                        {statusOptions.map((option) => (
+                          <CommandItem
+                            key={option.value}
+                            value={option.value.toString()}
+                            onSelect={(currentValue) => {
+                              setSelectedStatus(Number(currentValue));
+                              setStatusOpen(false);
+                            }}
+                          >
+                            <Check className={cn('mr-2 h-4 w-4', selectedStatus === option.value ? 'opacity-100' : 'opacity-0')} />
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="start_deadline">Start Deadline</Label>
+              <DateTimePicker
+                hourCycle={24}
+                value={startDate}
+                onChange={(selectedDate) => {
+                  setStartDate(selectedDate);
+                }}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="end_deadline">End Deadline</Label>
+              <DateTimePicker
+                hourCycle={24}
+                value={endDate}
+                onChange={(selectedDate) => {
+                  setEndDate(selectedDate);
+                }}
+              />
+            </div>
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="deadline">Deadline</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}>
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(selectedDate) => {
-                    setDate(selectedDate);
-                    handleFilterChange('deadline', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+          <div className="flex items-end space-x-2">
+            <Button variant="outline" onClick={applyFilters}>
+              Apply
+            </Button>
+            <Button variant="outline" onClick={clearFilters}>
+              Clear
+            </Button>
           </div>
         </div>
 

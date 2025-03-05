@@ -12,6 +12,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 	Route::resource('products', ProductController::class);
 	Route::resource('work-orders', WorkOrderController::class);
+
+	Route::get('work-orders/{workOrder}/update-status', [WorkOrderController::class, 'editStatus'])->name('work-orders.edit-status');
+	Route::patch('work-orders/{workOrder}/update-status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.update-status');
+	Route::get('work-orders/{workOrder}/add-progress-note', [WorkOrderController::class, 'editProgress'])->name('work-orders.edit-progress');
+	Route::post('work-orders/{workOrder}/store-progress', [WorkOrderController::class, 'storeProgress'])->name('work-orders.store-progress');
 });
 
 require __DIR__ . '/settings.php';

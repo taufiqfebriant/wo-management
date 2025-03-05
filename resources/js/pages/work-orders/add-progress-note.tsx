@@ -1,0 +1,65 @@
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, useForm } from '@inertiajs/react';
+import * as React from 'react';
+
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: 'Work Orders',
+    href: '/work-orders',
+  },
+  {
+    title: 'Add Progress Note',
+    href: '/work-orders/add-progress-note',
+  },
+];
+
+type WorkOrder = {
+  id: number;
+  number: string;
+};
+
+export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder }) {
+  const { data, setData, post, processing, errors } = useForm({
+    note: '',
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(`/work-orders/${workOrder.id}/store-progress`);
+  };
+
+  return (
+    <AppLayout breadcrumbs={breadcrumbs}>
+      <Head title="Add Progress Note" />
+
+      <div className="px-4 py-6">
+        <div className="space-y-0.5">
+          <h2 className="text-xl font-semibold tracking-tight">Add Progress Note</h2>
+          <p className="text-muted-foreground text-sm">Add a progress note for the work order below</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <div className="grid gap-2">
+            <Label htmlFor="note">Note</Label>
+            <Input id="note" type="text" value={data.note} onChange={(e) => setData('note', e.target.value)} required />
+            {errors.note && <div className="text-red-600">{errors.note}</div>}
+          </div>
+
+          <div className="flex justify-between">
+            <Button variant="outline" asChild>
+              <a href="/work-orders">Cancel</a>
+            </Button>
+
+            <Button type="submit" disabled={processing}>
+              Add Note
+            </Button>
+          </div>
+        </form>
+      </div>
+    </AppLayout>
+  );
+}

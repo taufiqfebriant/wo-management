@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { DateTimePicker } from '@/components/ui/datetime-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
-import { Calendar as CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import * as React from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -77,7 +77,7 @@ export default function EditWorkOrder({
   const [productOpen, setProductOpen] = React.useState(false);
   const [operatorOpen, setOperatorOpen] = React.useState(false);
   const [statusOpen, setStatusOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(parseISO(workOrder.deadline));
+  const [date24, setDate24] = React.useState<Date | undefined>(parseISO(workOrder.deadline));
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -134,25 +134,14 @@ export default function EditWorkOrder({
 
           <div className="grid gap-2">
             <Label htmlFor="deadline">Deadline</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}>
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(selectedDate) => {
-                    setDate(selectedDate);
-                    setData('deadline', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <DateTimePicker
+              hourCycle={24}
+              value={date24}
+              onChange={(selectedDate) => {
+                setDate24(selectedDate);
+                setData('deadline', selectedDate ? format(selectedDate, 'yyyy-MM-dd HH:mm:ss') : '');
+              }}
+            />
             {errors.deadline && <div className="text-red-600">{errors.deadline}</div>}
           </div>
 

@@ -6,6 +6,7 @@ use App\Http\Resources\WorkOrderResource;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\WorkOrder;
+use App\Models\WorkOrderProgress;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -23,15 +24,23 @@ class WorkOrderController extends Controller
 			$query->where('status', $request->input('status'));
 		}
 
-		if ($request->has('deadline')) {
-			$query->whereDate('deadline', $request->input('deadline'));
+		if ($request->has('start_deadline') && $request->has('end_deadline')) {
+			$query->whereBetween('deadline', [$request->input('start_deadline'), $request->input('end_deadline')]);
+		} elseif ($request->has('start_deadline')) {
+			$query->where('deadline', '>=', $request->input('start_deadline'));
+		} elseif ($request->has('end_deadline')) {
+			$query->where('deadline', '<=', $request->input('end_deadline'));
+		}
+
+		if ($request->user()->hasRole('Operator')) {
+			$query->where('user_id', $request->user()->id);
 		}
 
 		$workOrders = $query->paginate(10)->withQueryString();
 
 		return Inertia::render('work-orders/index', [
 			'workOrders' => WorkOrderResource::collection($workOrders),
-			'filters' => $request->only(['status', 'deadline']),
+			'filters' => $request->only(['status', 'start_deadline', 'end_deadline']),
 		]);
 	}
 
@@ -76,6 +85,14 @@ class WorkOrderController extends Controller
 	}
 
 	/**
+	 * Display the specified resource.
+	 */
+	public function show(string $id)
+	{
+		//
+	}
+
+	/**
 	 * Show the form for editing the specified resource.
 	 */
 	public function edit(WorkOrder $workOrder)
@@ -84,7 +101,7 @@ class WorkOrderController extends Controller
 		$operatorRole = Role::where('name', 'Operator')->first();
 		$users = User::role($operatorRole)->get(['id', 'name']);
 		return Inertia::render('work-orders/edit', [
-			'workOrder' => new WorkOrderResource($workOrder->load(['product', 'user']))->resolve(),
+			'workOrder' => new WorkOrderResource($workOrder->load(['product', 'user'])),
 			'products' => $products,
 			'users' => $users,
 		]);
@@ -116,5 +133,75 @@ class WorkOrderController extends Controller
 		$workOrder->delete();
 
 		return redirect()->route('work-orders.index')->with('message', 'Work order deleted successfully.');
+	}
+
+	/**
+	 * Show the form for editing the status of the specified work order.
+	 */
+	public function editStatus(WorkOrder $workOrder)
+	{
+		return Inertia::render('work-orders/update-status', [
+			'workOrder' => new WorkOrderResource($workOrder),
+		]);
+	}
+
+	/**
+	 * Update the status and quantity of the specified work order.
+	 */
+	public function updateStatus(Request $request, WorkOrder $workOrder)
+	{
+		$validated = $request->validate([
+			'status' => 'required|integer|in:' . implode(',', [WorkOrder::IN_PROGRESS, WorkOrder::COMPLETED]),
+			'quantity' => 'required|integer|min:1',
+		]);
+
+		$workOrder->update([
+			'status' => $validated['status'],
+			'quantity' => $validated['quantity'],
+		]);
+
+		if ($validated['status'] == WorkOrder::IN_PROGRESS) {
+			$workOrder->update(['in_progress_at' => now()]);
+		} elseif ($validated['status'] == WorkOrder::COMPLETED) {
+			$workOrder->update(['completed_at' => now()]);
+		}
+
+		WorkOrderProgress::create([
+			'work_order_id' => $workOrder->id,
+			'status' => $validated['status'],
+			'quantity' => $validated['quantity'],
+			'note' => null,
+		]);
+
+		return redirect()->route('work-orders.index')->with('message', 'Work order status updated successfully.');
+	}
+
+	/**
+	 * Show the form for adding a progress note to the specified work order.
+	 */
+	public function editProgress(WorkOrder $workOrder)
+	{
+		return Inertia::render('work-orders/add-progress-note', [
+			'workOrder' => new WorkOrderResource($workOrder),
+		]);
+	}
+
+	/**
+	 * Store a new progress note for the specified work order.
+	 */
+	public function storeProgress(Request $request, WorkOrder $workOrder)
+	{
+		$validated = $request->validate([
+			'note' => 'required|string',
+		]);
+
+		WorkOrderProgress::create([
+			'work_order_id' => $workOrder->id,
+			'status' => WorkOrder::IN_PROGRESS,
+			'quantity' => $workOrder->quantity,
+			'note' => $validated['note'],
+		]);
+
+		return redirect()->route('work-orders.index', $workOrder)->with('message', 'Progress note added successfully.');
 	}
 }

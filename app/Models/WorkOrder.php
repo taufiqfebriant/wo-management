@@ -32,4 +32,14 @@ class WorkOrder extends Model
 	{
 		return $this->belongsTo(User::class);
 	}
+
+	public function workOrderUpdates()
+	{
+		return $this->hasMany(WorkOrderUpdate::class);
+	}
+
+	public function workOrderProgress()
+	{
+		return $this->hasMany(WorkOrderProgress::class);
+	}
 }

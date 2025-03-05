@@ -18,11 +18,11 @@ class WorkOrderResource extends JsonResource
 		return [
 			'id' => $this->id,
 			'number' => $this->number,
-			'product' => new ProductResource($this->whenLoaded('product'))->resolve(),
+			'product' => new ProductResource($this->whenLoaded('product')),
 			'quantity' => $this->quantity,
 			'deadline' => $this->deadline,
 			'status' => $this->getStatusString($this->status),
-			'operator' => new UserResource($this->whenLoaded('user'))->resolve(),
+			'operator' => new UserResource($this->whenLoaded('user')),
 			'created_at' => $this->created_at->format('Y-m-d H:i:s'),
 			'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
 		];

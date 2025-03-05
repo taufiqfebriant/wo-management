@@ -171,6 +171,11 @@ return new class extends Migration
 				'email' => 'operator@example.com',
 				'password' => Hash::make('password'),
 			],
+			[
+				'name' => 'Operator User 2',
+				'email' => 'operator2@example.com',
+				'password' => Hash::make('password'),
+			],
 		];
 
 		foreach ($users as $user) {
