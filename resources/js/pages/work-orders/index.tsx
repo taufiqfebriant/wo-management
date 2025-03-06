@@ -183,14 +183,16 @@ export default function WorkOrders() {
                     </AlertDialogContent>
                   </AlertDialog>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'update work order status') ? (
+                {auth.user.permissions.find((permission) => permission.name === 'update work order status') &&
+                ctx.row.original.status !== 'Completed' ? (
                   <DropdownMenuItem asChild>
                     <Link href={`/work-orders/${ctx.row.original.id}/update-status`} prefetch>
                       Update Status
                     </Link>
                   </DropdownMenuItem>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') ? (
+                {auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') &&
+                ctx.row.original.status === 'In Progress' ? (
                   <DropdownMenuItem asChild>
                     <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`} prefetch>
                       Add Progress Note

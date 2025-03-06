@@ -107,7 +107,7 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
                 </Command>
               </PopoverContent>
             </Popover>
-            {errors.status && <div className="text-red-600">{errors.status}</div>}
+            {errors.status ? <p className="text-[0.8rem] text-red-600">{errors.status}</p> : null}
           </div>
 
           <div className="grid gap-2">
@@ -119,9 +119,8 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
               onChange={(e) => setData('quantity_processed', Number(e.target.value))}
               min={1}
               max={workOrder.work_order_updates?.[0]?.quantity_processed ?? workOrder.quantity}
-              required
             />
-            {errors.quantity_processed && <div className="text-red-600">{errors.quantity_processed}</div>}
+            {errors.quantity_processed ? <p className="text-[0.8rem] text-red-600">{errors.quantity_processed}</p> : null}
           </div>
 
           <div className="flex justify-between">

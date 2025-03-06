@@ -91,7 +91,7 @@ export default function EditWorkOrder({
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="grid gap-2">
-            <Label htmlFor="product">Product</Label>
+            <Label htmlFor="product_id">Product</Label>
             <Popover open={productOpen} onOpenChange={setProductOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={productOpen} className="w-full justify-between">
@@ -123,13 +123,13 @@ export default function EditWorkOrder({
                 </Command>
               </PopoverContent>
             </Popover>
-            {errors.product_id && <div className="text-red-600">{errors.product_id}</div>}
+            {errors.product_id ? <p className="text-[0.8rem] text-red-600">{errors.product_id}</p> : null}
           </div>
 
           <div className="grid gap-2">
             <Label htmlFor="quantity">Quantity</Label>
-            <Input id="quantity" type="number" value={data.quantity} onChange={(e) => setData('quantity', Number(e.target.value))} required />
-            {errors.quantity && <div className="text-red-600">{errors.quantity}</div>}
+            <Input id="quantity" type="number" value={data.quantity} onChange={(e) => setData('quantity', Number(e.target.value))} />
+            {errors.quantity ? <p className="text-[0.8rem] text-red-600">{errors.quantity}</p> : null}
           </div>
 
           <div className="grid gap-2">
@@ -143,7 +143,7 @@ export default function EditWorkOrder({
               }}
               align="start"
             />
-            {errors.deadline && <div className="text-red-600">{errors.deadline}</div>}
+            {errors.deadline ? <p className="text-[0.8rem] text-red-600">{errors.deadline}</p> : null}
           </div>
 
           <div className="grid gap-2">
@@ -179,11 +179,11 @@ export default function EditWorkOrder({
                 </Command>
               </PopoverContent>
             </Popover>
-            {errors.status && <div className="text-red-600">{errors.status}</div>}
+            {errors.status ? <p className="text-[0.8rem] text-red-600">{errors.status}</p> : null}
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="operator">Operator</Label>
+            <Label htmlFor="user_id">Operator</Label>
             <Popover open={operatorOpen} onOpenChange={setOperatorOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={operatorOpen} className="w-full justify-between">
@@ -215,7 +215,7 @@ export default function EditWorkOrder({
                 </Command>
               </PopoverContent>
             </Popover>
-            {errors.user_id && <div className="text-red-600">{errors.user_id}</div>}
+            {errors.user_id ? <p className="text-[0.8rem] text-red-600">{errors.user_id}</p> : null}
           </div>
 
           <div className="flex justify-between">

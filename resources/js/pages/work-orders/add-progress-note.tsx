@@ -46,8 +46,8 @@ export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder })
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="grid gap-2">
             <Label htmlFor="progress_note">Progress Note</Label>
-            <Input id="progress_note" type="text" value={data.progress_note} onChange={(e) => setData('progress_note', e.target.value)} required />
-            {errors.progress_note && <div className="text-red-600">{errors.progress_note}</div>}
+            <Input id="progress_note" type="text" value={data.progress_note} onChange={(e) => setData('progress_note', e.target.value)} />
+            {errors.progress_note ? <p className="text-[0.8rem] text-red-600">{errors.progress_note}</p> : null}
           </div>
 
           <div className="flex justify-between">
