@@ -85,7 +85,7 @@ export default function WorkOrders() {
   const [statusOpen, setStatusOpen] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(filters.start_deadline ? parseISO(filters.start_deadline) : undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(filters.end_deadline ? parseISO(filters.end_deadline) : undefined);
-  const [selectedStatus, setSelectedStatus] = useState<number | undefined>(filters.status);
+  const [selectedStatus, setSelectedStatus] = useState<number | undefined>(filters.status !== undefined ? Number(filters.status) : undefined);
 
   useEffect(() => {
     if (message) {
@@ -258,7 +258,7 @@ export default function WorkOrders() {
               <Popover open={statusOpen} onOpenChange={setStatusOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" role="combobox" aria-expanded={statusOpen} className="w-full justify-between">
-                    {statusOptions.find((option) => option.value === selectedStatus)?.label || 'Select status'}
+                    {selectedStatus !== undefined ? statusOptions.find((option) => option.value === selectedStatus)?.label : 'All status'}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -268,6 +268,16 @@ export default function WorkOrders() {
                     <CommandList>
                       <CommandEmpty>No status found.</CommandEmpty>
                       <CommandGroup>
+                        <CommandItem
+                          value="all"
+                          onSelect={() => {
+                            setSelectedStatus(undefined);
+                            setStatusOpen(false);
+                          }}
+                        >
+                          <Check className={cn('mr-2 h-4 w-4', selectedStatus === undefined ? 'opacity-100' : 'opacity-0')} />
+                          All status
+                        </CommandItem>
                         {statusOptions.map((option) => (
                           <CommandItem
                             key={option.value}
