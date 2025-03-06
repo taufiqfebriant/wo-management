@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WorkOrder\StoreWorkOrderRequest;
 use App\Http\Resources\WorkOrderResource;
 use App\Models\Product;
 use App\Models\User;
@@ -62,14 +63,9 @@ class WorkOrderController extends Controller
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(Request $request)
+	public function store(StoreWorkOrderRequest $request)
 	{
-		$validated = $request->validate([
-			'product_id' => 'required|exists:products,id',
-			'quantity' => 'required|integer|min:1',
-			'deadline' => 'required|date',
-			'user_id' => 'required|exists:users,id',
-		]);
+		$validated = $request->validated();
 
 		$number = 'WO-' . now()->format('Ymd') . '-' . str_pad(WorkOrder::withTrashed()->count() + 1, 3, '0', STR_PAD_LEFT);
 

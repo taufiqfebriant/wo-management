@@ -44,13 +44,13 @@ export default function CreateProduct() {
               Name <span className="text-red-600">*</span>
             </Label>
             <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} />
-            {errors.name && <div className="text-red-600">{errors.name}</div>}
+            {errors.name ? <p className="text-[0.8rem] text-red-600">{errors.name}</p> : null}
           </div>
 
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
             <Input id="description" value={data.description} onChange={(e) => setData('description', e.target.value)} />
-            {errors.description && <div className="text-red-600">{errors.description}</div>}
+            {errors.description ? <p className="text-[0.8rem] text-red-600">{errors.description}</p> : null}
           </div>
 
           <div className="flex justify-between">

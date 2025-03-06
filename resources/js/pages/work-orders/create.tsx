@@ -87,13 +87,13 @@ export default function CreateWorkOrder() {
                 </Command>
               </PopoverContent>
             </Popover>
-            {errors.product_id && <div className="text-red-600">{errors.product_id}</div>}
+            {errors.product_id ? <p className="text-[0.8rem] text-red-600">{errors.product_id}</p> : null}
           </div>
 
           <div className="grid gap-2">
             <Label htmlFor="quantity">Quantity</Label>
-            <Input id="quantity" type="number" value={data.quantity} onChange={(e) => setData('quantity', e.target.value)} required />
-            {errors.quantity && <div className="text-red-600">{errors.quantity}</div>}
+            <Input id="quantity" type="number" value={data.quantity} onChange={(e) => setData('quantity', e.target.value)} />
+            {errors.quantity ? <p className="text-[0.8rem] text-red-600">{errors.quantity}</p> : null}
           </div>
 
           <div className="grid gap-2">
@@ -107,7 +107,7 @@ export default function CreateWorkOrder() {
               }}
               align="start"
             />
-            {errors.deadline && <div className="text-red-600">{errors.deadline}</div>}
+            {errors.deadline ? <p className="text-[0.8rem] text-red-600">{errors.deadline}</p> : null}
           </div>
 
           <div className="grid gap-2">
@@ -143,7 +143,7 @@ export default function CreateWorkOrder() {
                 </Command>
               </PopoverContent>
             </Popover>
-            {errors.user_id && <div className="text-red-600">{errors.user_id}</div>}
+            {errors.user_id ? <p className="text-[0.8rem] text-red-600">{errors.user_id}</p> : null}
           </div>
 
           <div className="flex justify-between">
