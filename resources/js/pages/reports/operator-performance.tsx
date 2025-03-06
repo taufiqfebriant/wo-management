@@ -1,10 +1,10 @@
+import { DataTable } from '@/components/ui/data-table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type OperatorPerformance, type PaginationResponse2 } from '@/types';
 import { Head } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
-import { DataTable } from './data-table';
 
 interface Props {
   performance: PaginationResponse2<OperatorPerformance>;
@@ -61,7 +61,7 @@ export default function OperatorPerformanceReport({ performance }: Props) {
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={performance.data} pageCount={performance.last_page} rowCount={performance.total} />
+        <DataTable columns={columns} data={performance.data} />
 
         <div className="mt-4 flex justify-end">
           <Pagination className="mx-[unset] w-[unset]">
@@ -73,6 +73,7 @@ export default function OperatorPerformanceReport({ performance }: Props) {
                     isActive={link.active}
                     dangerouslySetInnerHTML={{ __html: link.label }}
                     size={link.label.toLowerCase().includes('previous') || link.label.toLowerCase().includes('next') ? 'default' : 'icon'}
+                    prefetch
                     {...(!link.url || link.active ? { as: 'button', disabled: true } : {})}
                   />
                 </PaginationItem>
