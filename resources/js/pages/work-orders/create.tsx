@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import * as React from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -148,11 +148,20 @@ export default function CreateWorkOrder() {
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href="/work-orders">Cancel</Link>
+              <Link href="/work-orders" prefetch>
+                Cancel
+              </Link>
             </Button>
 
             <Button type="submit" disabled={processing}>
-              Create
+              {processing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Creating
+                </>
+              ) : (
+                'Create'
+              )}
             </Button>
           </div>
         </form>

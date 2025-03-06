@@ -35,7 +35,6 @@ export default function ShowProduct({ product }: { product: Product }) {
           <p className="text-muted-foreground text-sm">View the details of the product</p>
         </div>
 
-        {/* Product Details */}
         <Card>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
@@ -60,7 +59,9 @@ export default function ShowProduct({ product }: { product: Product }) {
         </Card>
 
         <Button variant="outline" asChild>
-          <Link href="/products">Back</Link>
+          <Link href="/products" prefetch>
+            Back
+          </Link>
         </Button>
       </div>
     </AppLayout>

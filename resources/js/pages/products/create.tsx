@@ -55,7 +55,9 @@ export default function CreateProduct() {
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href="/products">Cancel</Link>
+              <Link href="/products" prefetch>
+                Cancel
+              </Link>
             </Button>
 
             <Button type="submit" disabled={processing}>

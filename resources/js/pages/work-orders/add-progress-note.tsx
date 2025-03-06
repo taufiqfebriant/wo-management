@@ -3,7 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Loader2 } from 'lucide-react';
 import * as React from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -51,11 +52,20 @@ export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder })
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <a href="/work-orders">Cancel</a>
+              <Link href="/work-orders" prefetch>
+                Cancel
+              </Link>
             </Button>
 
             <Button type="submit" disabled={processing}>
-              Add Note
+              {processing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Adding
+                </>
+              ) : (
+                'Add'
+              )}
             </Button>
           </div>
         </form>

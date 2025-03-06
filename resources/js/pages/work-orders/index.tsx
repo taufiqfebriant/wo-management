@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { DataTable } from '@/components/ui/data-table';
 import { DateTimePicker } from '@/components/ui/datetime-picker';
 import {
   DropdownMenu,
@@ -29,10 +30,9 @@ import { type BreadcrumbItem, PaginationResponse, SharedData } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format, parseISO } from 'date-fns';
-import { Check, ChevronsUpDown, MoreHorizontal } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2, MoreHorizontal } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { DataTable } from './data-table';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -143,12 +143,16 @@ export default function WorkOrders() {
                 <DropdownMenuSeparator />
                 {auth.user.permissions.find((permission) => permission.name === 'read work order') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/work-orders/${ctx.row.original.id}`}>View Details</Link>
+                    <Link href={`/work-orders/${ctx.row.original.id}`} prefetch>
+                      View Details
+                    </Link>
                   </DropdownMenuItem>
                 ) : null}
                 {auth.user.permissions.find((permission) => permission.name === 'update work orders') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/work-orders/${ctx.row.original.id}/edit`}>Edit</Link>
+                    <Link href={`/work-orders/${ctx.row.original.id}/edit`} prefetch>
+                      Edit
+                    </Link>
                   </DropdownMenuItem>
                 ) : null}
                 {auth.user.permissions.find((permission) => permission.name === 'delete work orders') ? (
@@ -166,7 +170,14 @@ export default function WorkOrders() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={() => destroy(`/work-orders/${ctx.row.original.id}`)} disabled={processing}>
-                          Continue
+                          {processing ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Deleting
+                            </>
+                          ) : (
+                            'Continue'
+                          )}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -174,12 +185,16 @@ export default function WorkOrders() {
                 ) : null}
                 {auth.user.permissions.find((permission) => permission.name === 'update work order status') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/work-orders/${ctx.row.original.id}/update-status`}>Update Status</Link>
+                    <Link href={`/work-orders/${ctx.row.original.id}/update-status`} prefetch>
+                      Update Status
+                    </Link>
                   </DropdownMenuItem>
                 ) : null}
                 {auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`}>Add Progress Note</Link>
+                    <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`} prefetch>
+                      Add Progress Note
+                    </Link>
                   </DropdownMenuItem>
                 ) : null}
               </DropdownMenuContent>
@@ -227,7 +242,9 @@ export default function WorkOrders() {
 
           {auth.user.permissions.find((permission) => permission.name === 'create work orders') ? (
             <Button asChild>
-              <Link href="/work-orders/create">Create</Link>
+              <Link href="/work-orders/create" prefetch>
+                Create
+              </Link>
             </Button>
           ) : null}
         </div>
@@ -302,7 +319,7 @@ export default function WorkOrders() {
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={workOrders.data} pageCount={workOrders.meta.last_page} rowCount={workOrders.meta.total} />
+        <DataTable columns={columns} data={workOrders.data} />
 
         <div className="mt-4 flex justify-end">
           <Pagination className="mx-[unset] w-[unset]">
@@ -314,6 +331,7 @@ export default function WorkOrders() {
                     isActive={link.active}
                     dangerouslySetInnerHTML={{ __html: link.label }}
                     size={link.label.toLowerCase().includes('previous') || link.label.toLowerCase().includes('next') ? 'default' : 'icon'}
+                    prefetch
                     {...(!link.url || link.active ? { as: 'button', disabled: true } : {})}
                   />
                 </PaginationItem>
