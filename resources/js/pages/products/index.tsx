@@ -10,6 +10,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,10 +24,9 @@ import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, PaginationResponse, Product, SharedData } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
+import { Loader2, MoreHorizontal } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
-import { DataTable } from './data-table';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -81,12 +81,16 @@ export default function Products() {
                 <DropdownMenuSeparator />
                 {page.props.auth.user.permissions.find((permission) => permission.name === 'read product') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/products/${ctx.row.original.id}`}>View Details</Link>
+                    <Link href={`/products/${ctx.row.original.id}`} prefetch>
+                      View Details
+                    </Link>
                   </DropdownMenuItem>
                 ) : null}
                 {page.props.auth.user.permissions.find((permission) => permission.name === 'update products') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/products/${ctx.row.original.id}/edit`}>Edit</Link>
+                    <Link href={`/products/${ctx.row.original.id}/edit`} prefetch>
+                      Edit
+                    </Link>
                   </DropdownMenuItem>
                 ) : null}
                 {page.props.auth.user.permissions.find((permission) => permission.name === 'delete products') ? (
@@ -104,7 +108,14 @@ export default function Products() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={() => destroy(`/products/${ctx.row.original.id}`)} disabled={processing}>
-                          Continue
+                          {processing ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Deleting
+                            </>
+                          ) : (
+                            'Continue'
+                          )}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -132,14 +143,16 @@ export default function Products() {
 
           {page.props.auth.user.permissions.find((permission) => permission.name === 'create products') ? (
             <Button asChild>
-              <Link href="/products/create">Create</Link>
+              <Link href="/products/create" prefetch>
+                Create
+              </Link>
             </Button>
           ) : null}
         </div>
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={products.data} pageCount={products.meta.last_page} rowCount={products.meta.total} />
+        <DataTable columns={columns} data={products.data} />
 
         <div className="mt-4 flex justify-end">
           <Pagination className="mx-[unset] w-[unset]">
@@ -151,6 +164,7 @@ export default function Products() {
                     isActive={link.active}
                     dangerouslySetInnerHTML={{ __html: link.label }}
                     size={link.label.toLowerCase().includes('previous') || link.label.toLowerCase().includes('next') ? 'default' : 'icon'}
+                    prefetch
                     {...(!link.url || link.active ? { as: 'button', disabled: true } : {})}
                   />
                 </PaginationItem>

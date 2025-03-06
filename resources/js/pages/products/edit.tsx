@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { Loader2 } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -66,7 +67,14 @@ export default function EditProduct({ product }: { product: Product }) {
             </Button>
 
             <Button type="submit" disabled={processing}>
-              Update
+              {processing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Updating
+                </>
+              ) : (
+                'Update'
+              )}
             </Button>
           </div>
         </form>

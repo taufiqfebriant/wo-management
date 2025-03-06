@@ -26,4 +26,12 @@ class StoreProductRequest extends FormRequest
 			'description' => 'nullable|string',
 		];
 	}
+
+	public function attributes()
+	{
+		return [
+			'name' => 'Name',
+			'description' => 'Description',
+		];
+	}
 }
