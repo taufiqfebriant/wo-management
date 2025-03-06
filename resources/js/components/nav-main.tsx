@@ -8,21 +8,29 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import type { NavItem, SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
 
 export function NavMain({ items = [] }: { items: NavItem[] }) {
-  const page = usePage();
+  const page = usePage<SharedData>();
 
   const isActive = (url: string) => {
     return page.url === url || page.url.startsWith(`${url}/`);
   };
 
+  const filteredItems = items.filter((item) => {
+    if (item.permissions) {
+      return item.permissions.some((permission) => page.props.auth.user.permissions.some((userPermission) => userPermission.name === permission));
+    }
+
+    return true;
+  });
+
   return (
     <SidebarGroup className="px-2 py-0">
       <SidebarMenu>
-        {items.map((item) => {
+        {filteredItems.map((item) => {
           const active = isActive(item.url);
 
           if (item.items?.length) {

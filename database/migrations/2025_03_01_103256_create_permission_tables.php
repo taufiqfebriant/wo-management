@@ -128,24 +128,42 @@ return new class extends Migration
 		]);
 
 		DB::table($tableNames['permissions'])->insert([
-			['name' => 'create work order', 'guard_name' => 'web'],
-			['name' => 'assign operator', 'guard_name' => 'web'],
-			['name' => 'update status', 'guard_name' => 'web'],
-			['name' => 'view reports', 'guard_name' => 'web'],
-			['name' => 'view assigned work orders', 'guard_name' => 'web'],
+			['name' => 'read products', 'guard_name' => 'web'],
+			['name' => 'create products', 'guard_name' => 'web'],
+			['name' => 'update products', 'guard_name' => 'web'],
+			['name' => 'delete products', 'guard_name' => 'web'],
+			['name' => 'read product', 'guard_name' => 'web'],
+			['name' => 'read work orders', 'guard_name' => 'web'],
+			['name' => 'create work orders', 'guard_name' => 'web'],
+			['name' => 'update work orders', 'guard_name' => 'web'],
+			['name' => 'delete work orders', 'guard_name' => 'web'],
+			['name' => 'read work order', 'guard_name' => 'web'],
+			['name' => 'read work order summary report', 'guard_name' => 'web'],
+			['name' => 'read operator performance report', 'guard_name' => 'web'],
 			['name' => 'update work order status', 'guard_name' => 'web'],
+			['name' => 'create order progress notes', 'guard_name' => 'web'],
 		]);
 
 		$rolePermissions = [
 			'Production Manager' => [
-				'create work order',
-				'assign operator',
-				'update status',
-				'view reports',
+				'read products',
+				'create products',
+				'update products',
+				'delete products',
+				'read product',
+				'read work orders',
+				'create work orders',
+				'update work orders',
+				'delete work orders',
+				'read work order',
+				'read work order summary report',
+				'read operator performance report',
 			],
 			'Operator' => [
-				'view assigned work orders',
+				'read work orders',
+				'read work order',
 				'update work order status',
+				'create order progress notes',
 			],
 		];
 

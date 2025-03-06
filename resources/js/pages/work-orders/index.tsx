@@ -142,44 +142,46 @@ export default function WorkOrders() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href={`/work-orders/${ctx.row.original.id}`}>View Details</Link>
-                </DropdownMenuItem>
-                {auth.user.roles.some((role) => role.name === 'Production Manager') && (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/work-orders/${ctx.row.original.id}/edit`}>Edit</Link>
-                    </DropdownMenuItem>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the work order and remove its data from our servers.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => destroy(`/work-orders/${ctx.row.original.id}`)} disabled={processing}>
-                            Continue
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </>
-                )}
-                {auth.user.roles.some((role) => role.name === 'Operator') && ctx.row.original.status !== 'Completed' ? (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/work-orders/${ctx.row.original.id}/update-status`}>Update Status</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`}>Add Progress Note</Link>
-                    </DropdownMenuItem>
-                  </>
+                {auth.user.permissions.find((permission) => permission.name === 'read work order') ? (
+                  <DropdownMenuItem asChild>
+                    <Link href={`/work-orders/${ctx.row.original.id}`}>View Details</Link>
+                  </DropdownMenuItem>
+                ) : null}
+                {auth.user.permissions.find((permission) => permission.name === 'update work order') ? (
+                  <DropdownMenuItem asChild>
+                    <Link href={`/work-orders/${ctx.row.original.id}/edit`}>Edit</Link>
+                  </DropdownMenuItem>
+                ) : null}
+                {auth.user.permissions.find((permission) => permission.name === 'delete work order') ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete the work order and remove its data from our servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => destroy(`/work-orders/${ctx.row.original.id}`)} disabled={processing}>
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : null}
+                {auth.user.permissions.find((permission) => permission.name === 'update work order status') ? (
+                  <DropdownMenuItem asChild>
+                    <Link href={`/work-orders/${ctx.row.original.id}/update-status`}>Update Status</Link>
+                  </DropdownMenuItem>
+                ) : null}
+                {auth.user.permissions.find((permission) => permission.name === 'create order progress notes') ? (
+                  <DropdownMenuItem asChild>
+                    <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`}>Add Progress Note</Link>
+                  </DropdownMenuItem>
                 ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
@@ -187,7 +189,7 @@ export default function WorkOrders() {
         },
       },
     ],
-    [auth.user.roles, destroy, processing],
+    [destroy, processing, auth.user.permissions],
   );
 
   const applyFilters = () => {

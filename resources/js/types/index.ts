@@ -20,6 +20,7 @@ export interface NavItem {
   icon?: LucideIcon | null;
   isActive?: boolean;
   items?: NavItem[];
+  permissions?: string[];
 }
 
 export interface SharedData {
@@ -30,6 +31,22 @@ export interface SharedData {
   [key: string]: unknown;
 }
 
+export interface Permission {
+  id: number;
+  name: string;
+  guard_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Role {
+  id: number;
+  name: string;
+  guard_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface User {
   id: number;
   name: string;
@@ -38,7 +55,9 @@ export interface User {
   email_verified_at: string | null;
   created_at: string;
   updated_at: string;
-  [key: string]: unknown; // This allows for additional properties...
+  permissions: Permission[];
+  roles: Role[];
+  [key: string]: unknown;
 }
 
 export type Product = {

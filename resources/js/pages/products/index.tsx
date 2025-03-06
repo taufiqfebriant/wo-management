@@ -79,38 +79,44 @@ export default function Products() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href={`/products/${ctx.row.original.id}`}>View Details</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href={`/products/${ctx.row.original.id}/edit`}>Edit</Link>
-                </DropdownMenuItem>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the product and remove its data from our servers.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => destroy(`/products/${ctx.row.original.id}`)} disabled={processing}>
-                        Continue
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                {page.props.auth.user.permissions.find((permission) => permission.name === 'read product') ? (
+                  <DropdownMenuItem asChild>
+                    <Link href={`/products/${ctx.row.original.id}`}>View Details</Link>
+                  </DropdownMenuItem>
+                ) : null}
+                {page.props.auth.user.permissions.find((permission) => permission.name === 'update products') ? (
+                  <DropdownMenuItem asChild>
+                    <Link href={`/products/${ctx.row.original.id}/edit`}>Edit</Link>
+                  </DropdownMenuItem>
+                ) : null}
+                {page.props.auth.user.permissions.find((permission) => permission.name === 'delete products') ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete the product and remove its data from our servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => destroy(`/products/${ctx.row.original.id}`)} disabled={processing}>
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
           );
         },
       },
     ],
-    [destroy, processing],
+    [destroy, processing, page.props.auth.user.permissions],
   );
 
   return (
@@ -124,9 +130,11 @@ export default function Products() {
             <p className="text-muted-foreground text-sm">Manage and track the products</p>
           </div>
 
-          <Button asChild>
-            <Link href="/products/create">Create</Link>
-          </Button>
+          {page.props.auth.user.permissions.find((permission) => permission.name === 'create products') ? (
+            <Button asChild>
+              <Link href="/products/create">Create</Link>
+            </Button>
+          ) : null}
         </div>
 
         <div className="mt-6" />

@@ -17,24 +17,29 @@ const mainNavItems: NavItem[] = [
     title: 'Products',
     url: '/products',
     icon: Box,
+    permissions: ['read products'],
   },
   {
     title: 'Work Orders',
     url: '/work-orders',
     icon: ClipboardList,
+    permissions: ['read work orders'],
   },
   {
     title: 'Reports',
     url: '/reports',
     icon: FileText,
+    permissions: ['read work order summary report', 'read operator performance report'],
     items: [
       {
         title: 'Work Order Summary',
         url: '/reports/work-order-summary',
+        permissions: ['read work order summary report'],
       },
       {
         title: 'Operator Performance',
         url: '/reports/operator-performance',
+        permissions: ['read operator performance report'],
       },
     ],
   },
