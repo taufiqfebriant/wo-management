@@ -75,7 +75,9 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="grid gap-2">
-            <Label htmlFor="status">New Status</Label>
+            <Label htmlFor="status">
+              Status <span className="text-red-600">*</span>
+            </Label>
             <Popover open={statusOpen} onOpenChange={setStatusOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={statusOpen} className="w-full justify-between">
@@ -111,7 +113,9 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="quantity_processed">Processed Quantity</Label>
+            <Label htmlFor="quantity_processed">
+              Processed Quantity <span className="text-red-600">*</span>
+            </Label>
             <Input
               id="quantity_processed"
               type="number"

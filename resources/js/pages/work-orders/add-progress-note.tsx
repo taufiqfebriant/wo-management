@@ -45,7 +45,9 @@ export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder })
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="grid gap-2">
-            <Label htmlFor="progress_note">Progress Note</Label>
+            <Label htmlFor="progress_note">
+              Progress Note <span className="text-red-600">*</span>
+            </Label>
             <Input id="progress_note" type="text" value={data.progress_note} onChange={(e) => setData('progress_note', e.target.value)} />
             {errors.progress_note ? <p className="text-[0.8rem] text-red-600">{errors.progress_note}</p> : null}
           </div>

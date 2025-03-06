@@ -55,7 +55,9 @@ export default function CreateWorkOrder() {
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="grid gap-2">
-            <Label htmlFor="product_id">Product</Label>
+            <Label htmlFor="product_id">
+              Product <span className="text-red-600">*</span>
+            </Label>
             <Popover open={productOpen} onOpenChange={setProductOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={productOpen} className="w-full justify-between">
@@ -91,13 +93,17 @@ export default function CreateWorkOrder() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="quantity">Quantity</Label>
+            <Label htmlFor="quantity">
+              Quantity <span className="text-red-600">*</span>
+            </Label>
             <Input id="quantity" type="number" value={data.quantity} onChange={(e) => setData('quantity', e.target.value)} />
             {errors.quantity ? <p className="text-[0.8rem] text-red-600">{errors.quantity}</p> : null}
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="deadline">Deadline</Label>
+            <Label htmlFor="deadline">
+              Deadline <span className="text-red-600">*</span>
+            </Label>
             <DateTimePicker
               hourCycle={24}
               value={date24}
@@ -111,7 +117,9 @@ export default function CreateWorkOrder() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="user_id">Operator</Label>
+            <Label htmlFor="user_id">
+              Operator <span className="text-red-600">*</span>
+            </Label>
             <Popover open={operatorOpen} onOpenChange={setOperatorOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={operatorOpen} className="w-full justify-between">
