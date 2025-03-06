@@ -34,7 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 			->middleware('permission:update products')
 			->name('edit');
 
-		Route::put('/{product}', [ProductController::class, 'update'])
+		Route::patch('/{product}', [ProductController::class, 'update'])
 			->middleware('permission:update products')
 			->name('update');
 
@@ -64,7 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 			->middleware('permission:update work orders')
 			->name('edit');
 
-		Route::put('/{workOrder}', [WorkOrderController::class, 'update'])
+		Route::patch('/{workOrder}', [WorkOrderController::class, 'update'])
 			->middleware('permission:update work orders')
 			->name('update');
 

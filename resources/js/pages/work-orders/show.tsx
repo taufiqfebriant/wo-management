@@ -155,7 +155,7 @@ export default function ShowWorkOrder({ workOrder }: { workOrder: WorkOrder }) {
         </Card>
 
         <Button variant="outline" asChild>
-          <Link href="/products">Back</Link>
+          <Link href="/work-orders">Back</Link>
         </Button>
       </div>
     </AppLayout>

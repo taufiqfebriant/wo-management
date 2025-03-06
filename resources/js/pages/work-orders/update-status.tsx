@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import * as React from 'react';
 
@@ -83,7 +83,7 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0" align="start">
                 <Command>
                   <CommandInput placeholder="Search status..." />
                   <CommandList>
@@ -126,7 +126,7 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <a href="/work-orders">Cancel</a>
+              <Link href="/work-orders">Cancel</Link>
             </Button>
 
             <Button type="submit" disabled={processing}>

@@ -99,7 +99,7 @@ export default function EditWorkOrder({
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0" align="start">
                 <Command>
                   <CommandInput placeholder="Search product..." />
                   <CommandList>
@@ -141,6 +141,7 @@ export default function EditWorkOrder({
                 setDate24(selectedDate);
                 setData('deadline', selectedDate ? format(selectedDate, 'yyyy-MM-dd HH:mm:ss') : '');
               }}
+              align="start"
             />
             {errors.deadline && <div className="text-red-600">{errors.deadline}</div>}
           </div>
@@ -154,7 +155,7 @@ export default function EditWorkOrder({
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0" align="start">
                 <Command>
                   <CommandInput placeholder="Search status..." />
                   <CommandList>
@@ -190,7 +191,7 @@ export default function EditWorkOrder({
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0" align="start">
                 <Command>
                   <CommandInput placeholder="Search operator..." />
                   <CommandList>
