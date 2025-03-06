@@ -76,7 +76,6 @@ export default function WorkOrders() {
     SharedData & {
       workOrders: PaginationResponse<WorkOrder>;
       filters: { status?: number; start_deadline?: string; end_deadline?: string };
-      auth: { user: User };
     }
   >();
   const { message } = page.props.flash;
@@ -178,7 +177,7 @@ export default function WorkOrders() {
                     <Link href={`/work-orders/${ctx.row.original.id}/update-status`}>Update Status</Link>
                   </DropdownMenuItem>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'create order progress notes') ? (
+                {auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') ? (
                   <DropdownMenuItem asChild>
                     <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`}>Add Progress Note</Link>
                   </DropdownMenuItem>
@@ -226,9 +225,11 @@ export default function WorkOrders() {
             <p className="text-muted-foreground text-sm">Manage and track the status of work orders</p>
           </div>
 
-          <Button asChild>
-            <Link href="/work-orders/create">Create</Link>
-          </Button>
+          {auth.user.permissions.find((permission) => permission.name === 'create work orders') ? (
+            <Button asChild>
+              <Link href="/work-orders/create">Create</Link>
+            </Button>
+          ) : null}
         </div>
 
         <div className="mt-6 flex justify-between space-x-4">

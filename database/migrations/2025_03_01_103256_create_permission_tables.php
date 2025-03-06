@@ -141,7 +141,7 @@ return new class extends Migration
 			['name' => 'read work order summary report', 'guard_name' => 'web'],
 			['name' => 'read operator performance report', 'guard_name' => 'web'],
 			['name' => 'update work order status', 'guard_name' => 'web'],
-			['name' => 'create order progress notes', 'guard_name' => 'web'],
+			['name' => 'create work order progress notes', 'guard_name' => 'web'],
 		]);
 
 		$rolePermissions = [
@@ -163,7 +163,7 @@ return new class extends Migration
 				'read work orders',
 				'read work order',
 				'update work order status',
-				'create order progress notes',
+				'create work order progress notes',
 			],
 		];
 
