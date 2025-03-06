@@ -9,11 +9,11 @@ import { Loader2 } from 'lucide-react';
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Products',
-    href: '/products',
+    href: route('products.index'),
   },
   {
     title: 'Edit Product',
-    href: '/products/edit',
+    href: '#',
   },
 ];
 
@@ -33,7 +33,7 @@ export default function EditProduct({ product }: { product: Product }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    patch(`/products/${product.id}`);
+    patch(route('products.update', product.id));
   };
 
   return (
@@ -63,7 +63,7 @@ export default function EditProduct({ product }: { product: Product }) {
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href="/products" prefetch>
+              <Link href={route('products.index')} prefetch>
                 Cancel
               </Link>
             </Button>

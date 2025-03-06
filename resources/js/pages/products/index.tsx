@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Products',
-    href: '/products',
+    href: route('products.index'),
   },
 ];
 
@@ -81,14 +81,14 @@ export default function Products() {
                 <DropdownMenuSeparator />
                 {page.props.auth.user.permissions.find((permission) => permission.name === 'read product') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/products/${ctx.row.original.id}`} prefetch>
+                    <Link href={route('products.show', ctx.row.original.id)} prefetch>
                       View Details
                     </Link>
                   </DropdownMenuItem>
                 ) : null}
                 {page.props.auth.user.permissions.find((permission) => permission.name === 'update products') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/products/${ctx.row.original.id}/edit`} prefetch>
+                    <Link href={route('products.edit', ctx.row.original.id)} prefetch>
                       Edit
                     </Link>
                   </DropdownMenuItem>
@@ -107,7 +107,7 @@ export default function Products() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => destroy(`/products/${ctx.row.original.id}`)} disabled={processing}>
+                        <AlertDialogAction onClick={() => destroy(route('products.destroy', ctx.row.original.id))} disabled={processing}>
                           {processing ? (
                             <>
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -143,7 +143,7 @@ export default function Products() {
 
           {page.props.auth.user.permissions.find((permission) => permission.name === 'create products') ? (
             <Button asChild>
-              <Link href="/products/create" prefetch>
+              <Link href={route('products.create')} prefetch>
                 Create
               </Link>
             </Button>

@@ -9,11 +9,11 @@ import { Loader2 } from 'lucide-react';
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Products',
-    href: '/products',
+    href: route('products.index'),
   },
   {
     title: 'Create Product',
-    href: '/products/create',
+    href: route('products.create'),
   },
 ];
 
@@ -25,7 +25,7 @@ export default function CreateProduct() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/products');
+    post(route('products.store'));
   };
 
   return (
@@ -55,7 +55,7 @@ export default function CreateProduct() {
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href="/products" prefetch>
+              <Link href={route('products.index')} prefetch>
                 Cancel
               </Link>
             </Button>

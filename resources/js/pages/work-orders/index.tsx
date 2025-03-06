@@ -37,7 +37,7 @@ import { toast } from 'sonner';
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Work Orders',
-    href: '/work-orders',
+    href: route('work-orders.index'),
   },
 ];
 
@@ -143,14 +143,14 @@ export default function WorkOrders() {
                 <DropdownMenuSeparator />
                 {auth.user.permissions.find((permission) => permission.name === 'read work order') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/work-orders/${ctx.row.original.id}`} prefetch>
+                    <Link href={route('work-orders.show', ctx.row.original.id)} prefetch>
                       View Details
                     </Link>
                   </DropdownMenuItem>
                 ) : null}
                 {auth.user.permissions.find((permission) => permission.name === 'update work orders') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/work-orders/${ctx.row.original.id}/edit`} prefetch>
+                    <Link href={route('work-orders.edit', ctx.row.original.id)} prefetch>
                       Edit
                     </Link>
                   </DropdownMenuItem>
@@ -169,7 +169,7 @@ export default function WorkOrders() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => destroy(`/work-orders/${ctx.row.original.id}`)} disabled={processing}>
+                        <AlertDialogAction onClick={() => destroy(route('work-orders.destroy', ctx.row.original.id))} disabled={processing}>
                           {processing ? (
                             <>
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -186,7 +186,7 @@ export default function WorkOrders() {
                 {auth.user.permissions.find((permission) => permission.name === 'update work order status') &&
                 ctx.row.original.status !== 'Completed' ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/work-orders/${ctx.row.original.id}/update-status`} prefetch>
+                    <Link href={route('work-orders.edit-status', ctx.row.original.id)} prefetch>
                       Update Status
                     </Link>
                   </DropdownMenuItem>
@@ -194,7 +194,7 @@ export default function WorkOrders() {
                 {auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') &&
                 ctx.row.original.status === 'In Progress' ? (
                   <DropdownMenuItem asChild>
-                    <Link href={`/work-orders/${ctx.row.original.id}/add-progress-note`} prefetch>
+                    <Link href={route('work-orders.add-progress-note', ctx.row.original.id)} prefetch>
                       Add Progress Note
                     </Link>
                   </DropdownMenuItem>
@@ -214,7 +214,7 @@ export default function WorkOrders() {
       start_deadline: startDate ? format(startDate, 'yyyy-MM-dd HH:mm:ss') : undefined,
       end_deadline: endDate ? format(endDate, 'yyyy-MM-dd HH:mm:ss') : undefined,
     };
-    router.get('/work-orders', query, {
+    router.get(route('work-orders.index'), query, {
       preserveState: true,
       replace: true,
     });
@@ -225,7 +225,7 @@ export default function WorkOrders() {
     setStartDate(undefined);
     setEndDate(undefined);
 
-    router.get('/work-orders', undefined, {
+    router.get(route('work-orders.index'), undefined, {
       preserveState: true,
       replace: true,
     });
@@ -244,7 +244,7 @@ export default function WorkOrders() {
 
           {auth.user.permissions.find((permission) => permission.name === 'create work orders') ? (
             <Button asChild>
-              <Link href="/work-orders/create" prefetch>
+              <Link href={route('work-orders.create')} prefetch>
                 Create
               </Link>
             </Button>

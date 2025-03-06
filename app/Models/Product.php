@@ -13,4 +13,9 @@ class Product extends Model
 		'name',
 		'description',
 	];
+
+	public function workOrders()
+	{
+		return $this->hasMany(WorkOrder::class);
+	}
 }

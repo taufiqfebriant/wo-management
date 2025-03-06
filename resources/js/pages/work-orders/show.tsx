@@ -51,7 +51,7 @@ type WorkOrder = {
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Work Orders',
-    href: '/work-orders',
+    href: route('work-orders.index'),
   },
   {
     title: 'Detail',
@@ -70,7 +70,6 @@ export default function ShowWorkOrder({ workOrder }: { workOrder: WorkOrder }) {
           <p className="text-muted-foreground text-sm">View the details of the work order</p>
         </div>
 
-        {/* Work Order Details */}
         <Card>
           <CardHeader>
             <CardTitle>Work Order Details</CardTitle>
@@ -105,7 +104,6 @@ export default function ShowWorkOrder({ workOrder }: { workOrder: WorkOrder }) {
           </CardContent>
         </Card>
 
-        {/* Status Updates */}
         <Card>
           <CardHeader>
             <CardTitle>Status Updates</CardTitle>
@@ -132,7 +130,6 @@ export default function ShowWorkOrder({ workOrder }: { workOrder: WorkOrder }) {
           </CardContent>
         </Card>
 
-        {/* Progress Notes */}
         <Card>
           <CardHeader>
             <CardTitle>Progress Notes</CardTitle>
@@ -155,7 +152,7 @@ export default function ShowWorkOrder({ workOrder }: { workOrder: WorkOrder }) {
         </Card>
 
         <Button variant="outline" asChild>
-          <Link href="/work-orders" prefetch>
+          <Link href={route('work-orders.index')} prefetch>
             Back
           </Link>
         </Button>

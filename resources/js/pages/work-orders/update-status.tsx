@@ -13,11 +13,11 @@ import * as React from 'react';
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Work Orders',
-    href: '/work-orders',
+    href: route('work-orders.index'),
   },
   {
     title: 'Update Status',
-    href: '/work-orders/update-status',
+    href: '#',
   },
 ];
 
@@ -57,7 +57,7 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    patch(`/work-orders/${workOrder.id}/update-status`);
+    patch(route('work-orders.update-status', workOrder.id));
   };
 
   const [statusOpen, setStatusOpen] = React.useState(false);
@@ -129,7 +129,7 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href="/work-orders" prefetch>
+              <Link href={route('work-orders.index')} prefetch>
                 Cancel
               </Link>
             </Button>

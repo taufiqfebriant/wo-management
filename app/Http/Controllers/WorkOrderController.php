@@ -15,6 +15,7 @@ use App\Models\WorkOrderUpdate;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
 
 class WorkOrderController extends Controller
 {
@@ -137,7 +138,13 @@ class WorkOrderController extends Controller
 	 */
 	public function destroy(WorkOrder $workOrder)
 	{
-		$workOrder->delete();
+		DB::transaction(function () use ($workOrder) {
+			$workOrder->workOrderUpdates()->delete();
+
+			$workOrder->workOrderProgress()->delete();
+
+			$workOrder->delete();
+		});
 
 		return redirect()->route('work-orders.index')->with('message', 'Work order deleted successfully.');
 	}

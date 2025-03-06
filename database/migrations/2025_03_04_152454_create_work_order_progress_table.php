@@ -17,6 +17,7 @@ return new class extends Migration
 			$table->foreignId('user_id')->constrained();
 			$table->text('progress_notes');
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 

@@ -7,7 +7,7 @@ use App\Http\Requests\Products\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -75,7 +75,19 @@ class ProductController extends Controller
 	 */
 	public function destroy(Product $product)
 	{
-		$product->delete();
+		DB::transaction(function () use ($product) {
+			$workOrders = $product->workOrders;
+
+			foreach ($workOrders as $workOrder) {
+				$workOrder->workOrderUpdates()->delete();
+
+				$workOrder->workOrderProgress()->delete();
+
+				$workOrder->delete();
+			}
+
+			$product->delete();
+		});
 
 		return to_route('products.index')->with('message', 'Product deleted successfully.');
 	}

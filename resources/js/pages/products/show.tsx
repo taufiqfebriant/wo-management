@@ -16,7 +16,7 @@ type Product = {
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Products',
-    href: '/products',
+    href: route('products.index'),
   },
   {
     title: 'Detail',
@@ -59,7 +59,7 @@ export default function ShowProduct({ product }: { product: Product }) {
         </Card>
 
         <Button variant="outline" asChild>
-          <Link href="/products" prefetch>
+          <Link href={route('products.index')} prefetch>
             Back
           </Link>
         </Button>

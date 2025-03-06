@@ -10,11 +10,11 @@ import * as React from 'react';
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Work Orders',
-    href: '/work-orders',
+    href: route('work-orders.index'),
   },
   {
     title: 'Add Progress Note',
-    href: '/work-orders/add-progress-note',
+    href: '#',
   },
 ];
 
@@ -30,7 +30,7 @@ export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(`/work-orders/${workOrder.id}/store-progress`);
+    post(route('work-orders.store-progress', workOrder.id));
   };
 
   return (
@@ -54,7 +54,7 @@ export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder })
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href="/work-orders" prefetch>
+              <Link href={route('work-orders.index')} prefetch>
                 Cancel
               </Link>
             </Button>

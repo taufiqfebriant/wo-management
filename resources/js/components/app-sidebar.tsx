@@ -10,18 +10,18 @@ import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
   {
     title: 'Dashboard',
-    url: '/',
+    url: route('dashboard'),
     icon: LayoutGrid,
   },
   {
     title: 'Products',
-    url: '/products',
+    url: route('products.index'),
     icon: Box,
     permissions: ['read products'],
   },
   {
     title: 'Work Orders',
-    url: '/work-orders',
+    url: route('work-orders.index'),
     icon: ClipboardList,
     permissions: ['read work orders'],
   },
@@ -33,12 +33,12 @@ const mainNavItems: NavItem[] = [
     items: [
       {
         title: 'Work Order Summary',
-        url: '/reports/work-order-summary',
+        url: route('reports.work-order-summary'),
         permissions: ['read work order summary report'],
       },
       {
         title: 'Operator Performance',
-        url: '/reports/operator-performance',
+        url: route('reports.operator-performance'),
         permissions: ['read operator performance report'],
       },
     ],
@@ -54,7 +54,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/" prefetch>
+              <Link href={route('dashboard')} prefetch>
                 <AppLogo />
               </Link>
             </SidebarMenuButton>
