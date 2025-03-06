@@ -146,12 +146,12 @@ export default function WorkOrders() {
                     <Link href={`/work-orders/${ctx.row.original.id}`}>View Details</Link>
                   </DropdownMenuItem>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'update work order') ? (
+                {auth.user.permissions.find((permission) => permission.name === 'update work orders') ? (
                   <DropdownMenuItem asChild>
                     <Link href={`/work-orders/${ctx.row.original.id}/edit`}>Edit</Link>
                   </DropdownMenuItem>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'delete work order') ? (
+                {auth.user.permissions.find((permission) => permission.name === 'delete work orders') ? (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
