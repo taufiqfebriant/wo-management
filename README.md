@@ -79,6 +79,20 @@
     ./vendor/bin/sail npm run dev
     ```
 
+## Stopping and Removing Docker Containers
+
+To stop Docker containers, run the following command:
+
+```bash
+./vendor/bin/sail stop
+```
+
+To remove Docker containers and volumes, run the following command:
+
+```bash
+./vendor/bin/sail down -v
+```
+
 ## Default user credentials
 
 ### Production Manager:
