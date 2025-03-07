@@ -15,10 +15,6 @@ import { ChevronRight } from 'lucide-react';
 export function NavMain({ items = [] }: { items: NavItem[] }) {
   const page = usePage<SharedData>();
 
-  const isActive = (url: string) => {
-    return page.url === url || page.url.startsWith(`${url}/`);
-  };
-
   const filteredItems = items.filter((item) => {
     if (item.permissions) {
       return item.permissions.some((permission) => page.props.auth.user.permissions.some((userPermission) => userPermission.name === permission));
@@ -27,11 +23,15 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
     return true;
   });
 
+  function isActive(routeName: NavItem['routeName']) {
+    return route().current(routeName);
+  }
+
   return (
     <SidebarGroup className="px-2 py-0">
       <SidebarMenu>
         {filteredItems.map((item) => {
-          const active = isActive(item.url);
+          const active = isActive(item.routeName);
 
           if (item.items?.length) {
             return (
@@ -48,7 +48,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                     <SidebarMenuSub>
                       {item.items.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild isActive={isActive(subItem.url)}>
+                          <SidebarMenuSubButton asChild isActive={isActive(subItem.routeName)}>
                             <Link href={subItem.url} prefetch>
                               <span>{subItem.title}</span>
                             </Link>
