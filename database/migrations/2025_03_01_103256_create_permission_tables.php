@@ -125,25 +125,25 @@ return new class extends Migration
 		$now = now();
 
 		DB::table($tableNames['roles'])->insert([
-			['name' => 'Production Manager', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'Operator', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
+			['name' => 'Production Manager', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'Operator', 'guard_name' => 'web', 'created_at' => $now],
 		]);
 
 		DB::table($tableNames['permissions'])->insert([
-			['name' => 'read products', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'create products', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'update products', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'delete products', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'read product', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'read work orders', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'create work orders', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'update work orders', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'delete work orders', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'read work order', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'read work order summary report', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'read operator performance report', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'update work order status', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
-			['name' => 'create work order progress notes', 'guard_name' => 'web', 'created_at' => $now, 'updated_at' => $now],
+			['name' => 'read products', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'create products', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'update products', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'delete products', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'read product', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'read work orders', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'create work orders', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'update work orders', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'delete work orders', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'read work order', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'read work order summary report', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'read operator performance report', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'update work order status', 'guard_name' => 'web', 'created_at' => $now],
+			['name' => 'create work order progress notes', 'guard_name' => 'web', 'created_at' => $now],
 		]);
 
 		$rolePermissions = [
@@ -186,21 +186,18 @@ return new class extends Migration
 				'email' => 'manager@example.com',
 				'password' => Hash::make('password'),
 				'created_at' => $now,
-				'updated_at' => $now,
 			],
 			[
 				'name' => 'Operator User',
 				'email' => 'operator@example.com',
 				'password' => Hash::make('password'),
 				'created_at' => $now,
-				'updated_at' => $now,
 			],
 			[
 				'name' => 'Operator User 2',
 				'email' => 'operator2@example.com',
 				'password' => Hash::make('password'),
 				'created_at' => $now,
-				'updated_at' => $now,
 			],
 		];
 
