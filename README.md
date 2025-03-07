@@ -8,6 +8,7 @@
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
+- MySQL
 - Laravel Sail
 
 ## Requirements
