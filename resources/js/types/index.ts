@@ -69,7 +69,7 @@ export type Product = {
   updated_at: string;
 };
 
-export type PaginationResponse<T> = {
+export type Pagination<T> = {
   data: T[];
   meta: {
     current_page: number;

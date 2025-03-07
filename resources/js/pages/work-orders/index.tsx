@@ -26,7 +26,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
 import { cn, statusOptions } from '@/lib/utils';
-import { type BreadcrumbItem, PaginationResponse, SharedData } from '@/types';
+import { type BreadcrumbItem, SharedData } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format, parseISO } from 'date-fns';
@@ -67,7 +67,7 @@ type WorkOrder = {
 export default function WorkOrders() {
   const page = usePage<
     SharedData & {
-      workOrders: PaginationResponse<WorkOrder>;
+      workOrders: Pagination<WorkOrder>;
       filters: { status?: number; start_deadline?: string; end_deadline?: string };
     }
   >();
@@ -181,7 +181,7 @@ export default function WorkOrders() {
                 {auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') &&
                 ctx.row.original.status === 'In Progress' ? (
                   <DropdownMenuItem asChild>
-                    <Link href={route('work-orders.add-progress-note', ctx.row.original.id)}>Add Progress Note</Link>
+                    <Link href={route('work-orders.edit-progress', ctx.row.original.id)}>Add Progress Note</Link>
                   </DropdownMenuItem>
                 ) : null}
               </DropdownMenuContent>

@@ -35,9 +35,9 @@ class ProductController extends Controller
 	 */
 	public function store(StoreProductRequest $request)
 	{
-		Product::create($request->validated());
+		$product = Product::create($request->validated());
 
-		return to_route('products.index')->with('message', 'Product created successfully.');
+		return to_route('products.show', $product)->with('message', 'Product created successfully.');
 	}
 
 	/**
@@ -67,7 +67,7 @@ class ProductController extends Controller
 	{
 		$product->update($request->validated());
 
-		return to_route('products.index')->with('message', 'Product updated successfully.');
+		return to_route('products.show', $product)->with('message', 'Product updated successfully.');
 	}
 
 	/**

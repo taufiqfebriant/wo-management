@@ -23,8 +23,26 @@ class ReportController extends Controller
 			DB::raw('COUNT(CASE WHEN work_orders.status = ' . WorkOrder::COMPLETED . ' THEN 1 END) as completed_count'),
 			DB::raw('COUNT(CASE WHEN work_orders.status = ' . WorkOrder::CANCELED . ' THEN 1 END) as canceled_count'),
 			DB::raw('SUM(CASE WHEN work_orders.status = ' . WorkOrder::PENDING . ' THEN work_orders.quantity END) as pending_quantity'),
-			DB::raw('SUM(CASE WHEN work_orders.status = ' . WorkOrder::IN_PROGRESS . ' THEN work_orders.quantity END) as in_progress_quantity'),
-			DB::raw('SUM(CASE WHEN work_orders.status = ' . WorkOrder::COMPLETED . ' THEN work_orders.quantity END) as completed_quantity'),
+			DB::raw('SUM(CASE 
+				WHEN work_orders.status = ' . WorkOrder::IN_PROGRESS . ' 
+				THEN (
+					SELECT quantity_processed 
+					FROM work_order_updates 
+					WHERE work_order_updates.work_order_id = work_orders.id 
+					ORDER BY work_order_updates.created_at DESC 
+					LIMIT 1
+				)
+			END) as in_progress_quantity'),
+			DB::raw('SUM(CASE 
+				WHEN work_orders.status = ' . WorkOrder::COMPLETED . ' 
+				THEN (
+					SELECT quantity_processed 
+					FROM work_order_updates 
+					WHERE work_order_updates.work_order_id = work_orders.id 
+					ORDER BY work_order_updates.created_at DESC 
+					LIMIT 1
+				)
+			END) as completed_quantity'),
 			DB::raw('SUM(CASE WHEN work_orders.status = ' . WorkOrder::CANCELED . ' THEN work_orders.quantity END) as canceled_quantity')
 		)
 			->leftJoin('work_orders', function ($join) {

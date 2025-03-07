@@ -1,17 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, Product, SharedData } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
-
-type Product = {
-  id: number;
-  name: string;
-  description: string | null;
-  created_at: string;
-  updated_at: string;
-};
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -24,10 +18,22 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function ShowProduct({ product }: { product: Product }) {
+type ProductProps = SharedData & {
+  product: Product;
+};
+
+export default function Product(props: ProductProps) {
+  const { message } = props.flash;
+
+  useEffect(() => {
+    if (message) {
+      toast(message);
+    }
+  }, [message]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title={`Product ${product.name}`} />
+      <Head title={`Product ${props.product.name}`} />
 
       <div className="space-y-8 px-4 py-6">
         <div className="space-y-0.5">
@@ -40,19 +46,19 @@ export default function ShowProduct({ product }: { product: Product }) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-muted-foreground text-sm">Name</p>
-                <p className="font-medium">{product.name}</p>
+                <p className="font-medium">{props.product.name}</p>
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">Description</p>
-                <p className="font-medium">{product.description || '-'}</p>
+                <p className="font-medium">{props.product.description || '-'}</p>
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">Created At</p>
-                <p className="font-medium">{format(parseISO(product.created_at), 'PPP')}</p>
+                <p className="font-medium">{format(parseISO(props.product.created_at), 'PPP')}</p>
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">Updated At</p>
-                <p className="font-medium">{format(parseISO(product.updated_at), 'PPP')}</p>
+                <p className="font-medium">{format(parseISO(props.product.updated_at), 'PPP')}</p>
               </div>
             </div>
           </CardContent>

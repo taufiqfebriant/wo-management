@@ -21,8 +21,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem, PaginationResponse, Product, SharedData } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import type { BreadcrumbItem, Pagination as PaginationType, Product, SharedData } from '@/types';
+import { Head, Link, useForm } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Loader2, MoreHorizontal } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
@@ -35,10 +35,12 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function Products() {
-  const page = usePage<SharedData & { products: PaginationResponse<Product> }>();
-  const { message } = page.props.flash;
-  const { products } = page.props;
+type ProductsProps = SharedData & {
+  products: PaginationType<Product>;
+};
+
+export default function Products(props: ProductsProps) {
+  const { message } = props.flash;
   const { delete: destroy, processing } = useForm();
 
   useEffect(() => {
@@ -79,17 +81,17 @@ export default function Products() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {page.props.auth.user.permissions.find((permission) => permission.name === 'read product') ? (
+                {props.auth.user.permissions.find((permission) => permission.name === 'read product') ? (
                   <DropdownMenuItem asChild>
                     <Link href={route('products.show', ctx.row.original.id)}>View Details</Link>
                   </DropdownMenuItem>
                 ) : null}
-                {page.props.auth.user.permissions.find((permission) => permission.name === 'update products') ? (
+                {props.auth.user.permissions.find((permission) => permission.name === 'update products') ? (
                   <DropdownMenuItem asChild>
                     <Link href={route('products.edit', ctx.row.original.id)}>Edit</Link>
                   </DropdownMenuItem>
                 ) : null}
-                {page.props.auth.user.permissions.find((permission) => permission.name === 'delete products') ? (
+                {props.auth.user.permissions.find((permission) => permission.name === 'delete products') ? (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
@@ -123,7 +125,7 @@ export default function Products() {
         },
       },
     ],
-    [destroy, processing, page.props.auth.user.permissions],
+    [destroy, processing, props.auth.user.permissions],
   );
 
   return (
@@ -137,7 +139,7 @@ export default function Products() {
             <p className="text-muted-foreground text-sm">Manage and track the products</p>
           </div>
 
-          {page.props.auth.user.permissions.find((permission) => permission.name === 'create products') ? (
+          {props.auth.user.permissions.find((permission) => permission.name === 'create products') ? (
             <Button asChild>
               <Link href={route('products.create')}>Create</Link>
             </Button>
@@ -146,12 +148,12 @@ export default function Products() {
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={products.data} />
+        <DataTable columns={columns} data={props.products.data} />
 
         <div className="mt-4 flex justify-end">
           <Pagination className="mx-[unset] w-[unset]">
             <PaginationContent>
-              {products.meta.links.map((link) => (
+              {props.products.meta.links.map((link) => (
                 <PaginationItem key={link.label}>
                   <PaginationLink
                     href={link.url ?? '#'}

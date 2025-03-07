@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, Product, SharedData } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 
@@ -17,23 +17,19 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-type Product = {
-  id: number;
-  name: string;
-  description: string | null;
-  created_at: string;
-  updated_at: string;
+type EditProductProps = SharedData & {
+  product: Product;
 };
 
-export default function EditProduct({ product }: { product: Product }) {
+export default function EditProduct(props: EditProductProps) {
   const { data, setData, patch, processing, errors } = useForm({
-    name: product.name,
-    description: product.description,
+    name: props.product.name,
+    description: props.product.description,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    patch(route('products.update', product.id));
+    patch(route('products.update', props.product.id));
   };
 
   return (
