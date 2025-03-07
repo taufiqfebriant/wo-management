@@ -18,7 +18,9 @@ class WorkOrderProgressResource extends JsonResource
 			'id' => $this->id,
 			'progress_notes' => $this->progress_notes,
 			'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+			'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
 			'user' => new UserResource($this->whenLoaded('user')),
+			'work_order' => new WorkOrderResource($this->whenLoaded('workOrder')),
 		];
 	}
 }

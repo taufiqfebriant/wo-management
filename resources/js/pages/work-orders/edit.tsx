@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
 import { cn, statusOptions } from '@/lib/utils';
-import { type BreadcrumbItem } from '@/types';
+import { Product, User, WorkOrder, type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
@@ -23,54 +23,30 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-type Product = {
-  id: number;
-  name: string;
-};
-
-type User = {
-  id: number;
-  name: string;
-};
-
-type WorkOrder = {
-  id: number;
-  number: string;
-  product: Product;
-  quantity: number;
-  deadline: string;
-  status: string;
-  operator: User;
-  created_at: string;
-  updated_at: string;
-};
-
-export default function EditWorkOrder({
-  workOrder,
-  products,
-  users,
-}: {
+type EditWorkOrderProps = {
   workOrder: WorkOrder;
-  products: { id: number; name: string }[];
-  users: { id: number; name: string }[];
-}) {
+  products: Product[];
+  users: User[];
+};
+
+export default function EditWorkOrder(props: EditWorkOrderProps) {
   const { data, setData, patch, processing, errors } = useForm({
-    product_id: workOrder.product.id,
-    quantity: workOrder.quantity,
-    deadline: workOrder.deadline,
-    status: statusOptions.find((option) => option.label === workOrder.status)?.value || 0,
-    user_id: workOrder.operator.id,
+    product_id: props.workOrder.product?.id,
+    quantity: props.workOrder.quantity,
+    deadline: props.workOrder.deadline,
+    status: statusOptions.find((option) => option.value === props.workOrder.status)?.value || 0,
+    user_id: props.workOrder.user?.id,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    patch(route('work-orders.update', workOrder.id));
+    patch(route('work-orders.update', props.workOrder.id));
   };
 
   const [productOpen, setProductOpen] = React.useState(false);
   const [operatorOpen, setOperatorOpen] = React.useState(false);
   const [statusOpen, setStatusOpen] = React.useState(false);
-  const [date24, setDate24] = React.useState<Date | undefined>(parseISO(workOrder.deadline));
+  const [date24, setDate24] = React.useState<Date | undefined>(parseISO(props.workOrder.deadline));
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -90,7 +66,7 @@ export default function EditWorkOrder({
             <Popover open={productOpen} onOpenChange={setProductOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={productOpen} className="w-full justify-between">
-                  {data.product_id ? products.find((product) => product.id === data.product_id)?.name : 'Select product'}
+                  {data.product_id ? props.products.find((product) => product.id === data.product_id)?.name : 'Select product'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -100,7 +76,7 @@ export default function EditWorkOrder({
                   <CommandList>
                     <CommandEmpty>No product found.</CommandEmpty>
                     <CommandGroup>
-                      {products.map((product) => (
+                      {props.products.map((product) => (
                         <CommandItem
                           key={product.id}
                           value={product.id.toString()}
@@ -190,7 +166,7 @@ export default function EditWorkOrder({
             <Popover open={operatorOpen} onOpenChange={setOperatorOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={operatorOpen} className="w-full justify-between">
-                  {data.user_id ? users.find((user) => user.id === data.user_id)?.name : 'Select operator'}
+                  {data.user_id ? props.users.find((user) => user.id === data.user_id)?.name : 'Select operator'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -200,7 +176,7 @@ export default function EditWorkOrder({
                   <CommandList>
                     <CommandEmpty>No operator found.</CommandEmpty>
                     <CommandGroup>
-                      {users.map((user) => (
+                      {props.users.map((user) => (
                         <CommandItem
                           key={user.id}
                           value={user.id.toString()}

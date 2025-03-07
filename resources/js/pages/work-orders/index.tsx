@@ -25,9 +25,9 @@ import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
-import { cn, statusOptions } from '@/lib/utils';
-import { type BreadcrumbItem, SharedData } from '@/types';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { cn, statusOptions, workOrderStatus } from '@/lib/utils';
+import type { BreadcrumbItem, Pagination as PaginationType, SharedData, WorkOrder } from '@/types';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format, parseISO } from 'date-fns';
 import { Check, ChevronsUpDown, Loader2, MoreHorizontal } from 'lucide-react';
@@ -41,49 +41,34 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-type Product = {
-  id: number;
-  name: string;
+type WorkOrdersProps = SharedData & {
+  workOrders: PaginationType<WorkOrder>;
+  filters: { status?: number; start_deadline?: string; end_deadline?: string };
 };
 
-type User = {
-  id: number;
-  name: string;
-  roles: { id: number; name: string }[];
-};
-
-type WorkOrder = {
-  id: number;
-  number: string;
-  product: Product;
-  quantity: number;
-  deadline: string;
-  status: string;
-  operator: User;
-  created_at: string;
-  updated_at: string;
-};
-
-export default function WorkOrders() {
-  const page = usePage<
-    SharedData & {
-      workOrders: Pagination<WorkOrder>;
-      filters: { status?: number; start_deadline?: string; end_deadline?: string };
-    }
-  >();
-  const { message } = page.props.flash;
-  const { workOrders, filters, auth } = page.props;
+export default function WorkOrders(props: WorkOrdersProps) {
+  const { message } = props.flash;
   const { delete: destroy, processing } = useForm();
 
   const [statusOpen, setStatusOpen] = useState(false);
-  const [startDate, setStartDate] = useState<Date | undefined>(filters.start_deadline ? parseISO(filters.start_deadline) : undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(filters.end_deadline ? parseISO(filters.end_deadline) : undefined);
-  const [selectedStatus, setSelectedStatus] = useState<number | undefined>(filters.status !== undefined ? Number(filters.status) : undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(props.filters.start_deadline ? parseISO(props.filters.start_deadline) : undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(props.filters.end_deadline ? parseISO(props.filters.end_deadline) : undefined);
+  const [selectedStatus, setSelectedStatus] = useState<number | undefined>(
+    props.filters.status !== undefined ? Number(props.filters.status) : undefined,
+  );
 
   useEffect(() => {
-    if (message) {
-      toast(message);
+    if (!message) {
+      return;
     }
+
+    const timerId = setTimeout(() => {
+      toast(message);
+    });
+
+    return () => {
+      clearTimeout(timerId);
+    };
   }, [message]);
 
   const columns = useMemo<ColumnDef<WorkOrder>[]>(
@@ -107,9 +92,10 @@ export default function WorkOrders() {
       {
         accessorKey: 'status',
         header: 'Status',
+        cell: (ctx) => statusOptions.find((option) => option.value === ctx.getValue())?.label,
       },
       {
-        accessorKey: 'operator.name',
+        accessorKey: 'user.name',
         header: 'Operator',
       },
       {
@@ -134,17 +120,17 @@ export default function WorkOrders() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {auth.user.permissions.find((permission) => permission.name === 'read work order') ? (
+                {props.auth.user.permissions.find((permission) => permission.name === 'read work order') ? (
                   <DropdownMenuItem asChild>
                     <Link href={route('work-orders.show', ctx.row.original.id)}>View Details</Link>
                   </DropdownMenuItem>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'update work orders') ? (
+                {props.auth.user.permissions.find((permission) => permission.name === 'update work orders') ? (
                   <DropdownMenuItem asChild>
                     <Link href={route('work-orders.edit', ctx.row.original.id)}>Edit</Link>
                   </DropdownMenuItem>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'delete work orders') ? (
+                {props.auth.user.permissions.find((permission) => permission.name === 'delete work orders') ? (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Delete</DropdownMenuItem>
@@ -172,14 +158,14 @@ export default function WorkOrders() {
                     </AlertDialogContent>
                   </AlertDialog>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'update work order status') &&
-                ctx.row.original.status !== 'Completed' ? (
+                {props.auth.user.permissions.find((permission) => permission.name === 'update work order status') &&
+                ctx.row.original.status !== workOrderStatus.completed ? (
                   <DropdownMenuItem asChild>
                     <Link href={route('work-orders.edit-status', ctx.row.original.id)}>Update Status</Link>
                   </DropdownMenuItem>
                 ) : null}
-                {auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') &&
-                ctx.row.original.status === 'In Progress' ? (
+                {props.auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') &&
+                ctx.row.original.status === workOrderStatus.inProgress ? (
                   <DropdownMenuItem asChild>
                     <Link href={route('work-orders.edit-progress', ctx.row.original.id)}>Add Progress Note</Link>
                   </DropdownMenuItem>
@@ -190,7 +176,7 @@ export default function WorkOrders() {
         },
       },
     ],
-    [destroy, processing, auth.user.permissions],
+    [destroy, processing, props.auth.user.permissions],
   );
 
   const applyFilters = () => {
@@ -227,7 +213,7 @@ export default function WorkOrders() {
             <p className="text-muted-foreground text-sm">Manage and track the status of work orders</p>
           </div>
 
-          {auth.user.permissions.find((permission) => permission.name === 'create work orders') ? (
+          {props.auth.user.permissions.find((permission) => permission.name === 'create work orders') ? (
             <Button asChild>
               <Link href={route('work-orders.create')}>Create</Link>
             </Button>
@@ -314,12 +300,12 @@ export default function WorkOrders() {
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={workOrders.data} />
+        <DataTable columns={columns} data={props.workOrders.data} />
 
         <div className="mt-4 flex justify-end">
           <Pagination className="mx-[unset] w-[unset]">
             <PaginationContent>
-              {workOrders.meta.links.map((link) => (
+              {props.workOrders.meta.links.map((link) => (
                 <PaginationItem key={link.label}>
                   <PaginationLink
                     href={link.url ?? '#'}

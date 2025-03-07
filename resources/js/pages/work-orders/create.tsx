@@ -6,8 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import type { BreadcrumbItem, Product, SharedData, User } from '@/types';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import * as React from 'react';
@@ -23,16 +23,18 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function CreateWorkOrder() {
+type CreateWorkOrderProps = SharedData & {
+  products: Product[];
+  users: User[];
+};
+
+export default function CreateWorkOrder(props: CreateWorkOrderProps) {
   const { data, setData, post, processing, errors } = useForm({
     product_id: '',
     quantity: '',
     deadline: '',
     user_id: '',
   });
-
-  const page = usePage<{ products: { id: number; name: string }[]; users: { id: number; name: string }[] }>();
-  const { products, users } = page.props;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +63,7 @@ export default function CreateWorkOrder() {
             <Popover open={productOpen} onOpenChange={setProductOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={productOpen} className="w-full justify-between">
-                  {data.product_id ? products.find((product) => product.id === Number(data.product_id))?.name : 'Select product'}
+                  {data.product_id ? props.products.find((product) => product.id === Number(data.product_id))?.name : 'Select product'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -71,7 +73,7 @@ export default function CreateWorkOrder() {
                   <CommandList>
                     <CommandEmpty>No product found.</CommandEmpty>
                     <CommandGroup>
-                      {products.map((product) => (
+                      {props.products.map((product) => (
                         <CommandItem
                           key={product.id}
                           value={product.id.toString()}
@@ -123,7 +125,7 @@ export default function CreateWorkOrder() {
             <Popover open={operatorOpen} onOpenChange={setOperatorOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={operatorOpen} className="w-full justify-between">
-                  {data.user_id ? users.find((user) => user.id === Number(data.user_id))?.name : 'Select operator'}
+                  {data.user_id ? props.users.find((user) => user.id === Number(data.user_id))?.name : 'Select operator'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -133,7 +135,7 @@ export default function CreateWorkOrder() {
                   <CommandList>
                     <CommandEmpty>No operator found.</CommandEmpty>
                     <CommandGroup>
-                      {users.map((user) => (
+                      {props.users.map((user) => (
                         <CommandItem
                           key={user.id}
                           value={user.id.toString()}

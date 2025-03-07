@@ -44,9 +44,17 @@ export default function Products(props: ProductsProps) {
   const { delete: destroy, processing } = useForm();
 
   useEffect(() => {
-    if (message) {
-      toast(message);
+    if (!message) {
+      return;
     }
+
+    const timerId = setTimeout(() => {
+      toast(message);
+    });
+
+    return () => {
+      clearTimeout(timerId);
+    };
   }, [message]);
 
   const columns = useMemo<ColumnDef<Product>[]>(

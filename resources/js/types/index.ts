@@ -36,16 +36,16 @@ export interface Permission {
   id: number;
   name: string;
   guard_name: string;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface Role {
   id: number;
   name: string;
   guard_name: string;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface User {
@@ -54,8 +54,8 @@ export interface User {
   email: string;
   avatar?: string;
   email_verified_at: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   permissions: Permission[];
   roles: Role[];
   [key: string]: unknown;
@@ -65,8 +65,42 @@ export type Product = {
   id: number;
   name: string;
   description: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+export type WorkOrderProgress = {
+  id: number;
+  progress_notes: string;
+  created_at: string | null;
+  updated_at: string | null;
+  user?: User;
+  work_order?: WorkOrder;
+};
+
+export type WorkOrderUpdate = {
+  id: number;
+  previous_status: number;
+  new_status: number;
+  quantity_processed: number;
+  created_at: string | null;
+  updated_at: string | null;
+  user?: User;
+  work_order?: WorkOrder;
+};
+
+export type WorkOrder = {
+  id: number;
+  number: string;
+  product?: Product;
+  quantity: number;
+  deadline: string;
+  status: number;
+  user?: User;
+  created_at: string | null;
+  updated_at: string | null;
+  work_order_progress?: WorkOrderProgress[];
+  work_order_updates?: WorkOrderUpdate[];
 };
 
 export type Pagination<T> = {

@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
 import { cn, statusOptions } from '@/lib/utils';
-import { type BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, SharedData, WorkOrderUpdate } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
 import * as React from 'react';
@@ -21,40 +21,32 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-type WorkOrder = {
-  id: number;
-  number: string;
-  quantity: number;
-  status: string;
-  work_order_updates: { quantity_processed: number }[];
+type UpdateWorkOrderStatusProps = SharedData & {
+  workOrderUpdate: WorkOrderUpdate;
 };
 
-const getStatusOptions = (currentStatus: string) => {
-  if (currentStatus === 'Pending') {
-    return [{ value: 1, label: 'In Progress' }];
-  } else if (currentStatus === 'In Progress') {
-    return [{ value: 2, label: 'Completed' }];
-  }
-  return [];
-};
-
-const getStatusValue = (currentStatus: string) => {
-  return statusOptions.find((option) => option.label === currentStatus)?.value || 0;
-};
-
-export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
+export default function UpdateWorkOrderStatus(props: UpdateWorkOrderStatusProps) {
   const { data, setData, patch, processing, errors } = useForm({
-    status: getStatusValue(workOrder.status),
-    quantity_processed: workOrder.work_order_updates?.[0]?.quantity_processed ?? workOrder.quantity,
+    status: props.workOrderUpdate.new_status,
+    quantity_processed: props.workOrderUpdate.quantity_processed,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    patch(route('work-orders.update-status', workOrder.id));
+    patch(route('work-orders.update-status', props.workOrderUpdate.work_order?.id));
   };
 
   const [statusOpen, setStatusOpen] = React.useState(false);
-  const statusOptions = getStatusOptions(workOrder.status);
+
+  const filteredStatusOptions = statusOptions.filter((option) => {
+    if (props.workOrderUpdate.new_status === 0) {
+      return option.value === 1;
+    } else if (props.workOrderUpdate.new_status === 1) {
+      return option.value === 2;
+    } else {
+      return false;
+    }
+  });
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -74,7 +66,7 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
             <Popover open={statusOpen} onOpenChange={setStatusOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={statusOpen} className="w-full justify-between">
-                  {statusOptions.find((option) => option.value === data.status)?.label || 'Select status'}
+                  {filteredStatusOptions.find((option) => option.value === data.status)?.label || 'Select status'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -84,7 +76,7 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
                   <CommandList>
                     <CommandEmpty>No status found.</CommandEmpty>
                     <CommandGroup>
-                      {statusOptions.map((option) => (
+                      {filteredStatusOptions.map((option) => (
                         <CommandItem
                           key={option.value}
                           value={option.value.toString()}
@@ -114,8 +106,6 @@ export default function UpdateStatus({ workOrder }: { workOrder: WorkOrder }) {
               type="number"
               value={data.quantity_processed}
               onChange={(e) => setData('quantity_processed', Number(e.target.value))}
-              min={1}
-              max={workOrder.work_order_updates?.[0]?.quantity_processed ?? workOrder.quantity}
             />
             {errors.quantity_processed ? <p className="text-[0.8rem] text-red-600">{errors.quantity_processed}</p> : null}
           </div>

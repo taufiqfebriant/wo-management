@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, SharedData, WorkOrder } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import * as React from 'react';
@@ -18,19 +18,18 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-type WorkOrder = {
-  id: number;
-  number: string;
+type AddWorkOrderProgressNoteProps = SharedData & {
+  workOrder: WorkOrder;
 };
 
-export default function AddProgressNote({ workOrder }: { workOrder: WorkOrder }) {
+export default function AddWorkOrderProgressNote(props: AddWorkOrderProgressNoteProps) {
   const { data, setData, post, processing, errors } = useForm({
     progress_note: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route('work-orders.store-progress', workOrder.id));
+    post(route('work-orders.store-progress', props.workOrder.id));
   };
 
   return (

@@ -26,9 +26,17 @@ export default function Product(props: ProductProps) {
   const { message } = props.flash;
 
   useEffect(() => {
-    if (message) {
-      toast(message);
+    if (!message) {
+      return;
     }
+
+    const timerId = setTimeout(() => {
+      toast(message);
+    });
+
+    return () => {
+      clearTimeout(timerId);
+    };
   }, [message]);
 
   return (
@@ -54,11 +62,11 @@ export default function Product(props: ProductProps) {
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">Created At</p>
-                <p className="font-medium">{format(parseISO(props.product.created_at), 'PPP')}</p>
+                <p className="font-medium">{props.product.created_at ? format(parseISO(props.product.created_at), 'PPP') : '-'}</p>
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">Updated At</p>
-                <p className="font-medium">{format(parseISO(props.product.updated_at), 'PPP')}</p>
+                <p className="font-medium">{props.product.updated_at ? format(parseISO(props.product.updated_at), 'PPP') : '-'}</p>
               </div>
             </div>
           </CardContent>
