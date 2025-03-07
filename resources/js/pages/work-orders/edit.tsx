@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
-import { cn } from '@/lib/utils';
+import { cn, statusOptions } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
@@ -44,13 +44,6 @@ type WorkOrder = {
   created_at: string;
   updated_at: string;
 };
-
-const statusOptions = [
-  { value: 0, label: 'Pending' },
-  { value: 1, label: 'In Progress' },
-  { value: 2, label: 'Completed' },
-  { value: 3, label: 'Canceled' },
-];
 
 export default function EditWorkOrder({
   workOrder,

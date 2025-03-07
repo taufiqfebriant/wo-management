@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
-import { cn } from '@/lib/utils';
+import { cn, statusOptions } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
@@ -37,13 +37,6 @@ const getStatusOptions = (currentStatus: string) => {
   }
   return [];
 };
-
-const statusOptions = [
-  { value: 0, label: 'Pending' },
-  { value: 1, label: 'In Progress' },
-  { value: 2, label: 'Completed' },
-  { value: 3, label: 'Canceled' },
-];
 
 const getStatusValue = (currentStatus: string) => {
   return statusOptions.find((option) => option.label === currentStatus)?.value || 0;
