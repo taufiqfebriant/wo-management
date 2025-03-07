@@ -1,14 +1,10 @@
 import { DataTable } from '@/components/ui/data-table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type OperatorPerformance, type PaginationResponse2 } from '@/types';
+import type { BreadcrumbItem, OperatorPerformance, PaginationWithoutResource, SharedData } from '@/types';
 import { Head } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
-
-interface Props {
-  performance: PaginationResponse2<OperatorPerformance>;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -21,7 +17,11 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function OperatorPerformanceReport({ performance }: Props) {
+type OperatorPerformanceReportProps = SharedData & {
+  performance: PaginationWithoutResource<OperatorPerformance>;
+};
+
+export default function OperatorPerformanceReport(props: OperatorPerformanceReportProps) {
   const columns = useMemo<ColumnDef<OperatorPerformance>[]>(
     () => [
       {
@@ -61,12 +61,12 @@ export default function OperatorPerformanceReport({ performance }: Props) {
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={performance.data} />
+        <DataTable columns={columns} data={props.performance.data} />
 
         <div className="mt-4 flex justify-end">
           <Pagination className="mx-[unset] w-[unset]">
             <PaginationContent>
-              {performance.links.map((link) => (
+              {props.performance.links.map((link) => (
                 <PaginationItem key={link.label}>
                   <PaginationLink
                     href={link.url ?? '#'}

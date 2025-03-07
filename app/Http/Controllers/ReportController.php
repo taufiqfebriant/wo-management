@@ -18,37 +18,20 @@ class ReportController extends Controller
 	{
 		$summary = Product::select(
 			'products.name as product_name',
-			DB::raw('COUNT(CASE WHEN work_orders.status = ' . WorkOrder::PENDING . ' THEN 1 END) as pending_count'),
-			DB::raw('COUNT(CASE WHEN work_orders.status = ' . WorkOrder::IN_PROGRESS . ' THEN 1 END) as in_progress_count'),
-			DB::raw('COUNT(CASE WHEN work_orders.status = ' . WorkOrder::COMPLETED . ' THEN 1 END) as completed_count'),
-			DB::raw('COUNT(CASE WHEN work_orders.status = ' . WorkOrder::CANCELED . ' THEN 1 END) as canceled_count'),
-			DB::raw('SUM(CASE WHEN work_orders.status = ' . WorkOrder::PENDING . ' THEN work_orders.quantity END) as pending_quantity'),
-			DB::raw('SUM(CASE 
-				WHEN work_orders.status = ' . WorkOrder::IN_PROGRESS . ' 
-				THEN (
-					SELECT quantity_processed 
-					FROM work_order_updates 
-					WHERE work_order_updates.work_order_id = work_orders.id 
-					ORDER BY work_order_updates.created_at DESC 
-					LIMIT 1
-				)
-			END) as in_progress_quantity'),
-			DB::raw('SUM(CASE 
-				WHEN work_orders.status = ' . WorkOrder::COMPLETED . ' 
-				THEN (
-					SELECT quantity_processed 
-					FROM work_order_updates 
-					WHERE work_order_updates.work_order_id = work_orders.id 
-					ORDER BY work_order_updates.created_at DESC 
-					LIMIT 1
-				)
-			END) as completed_quantity'),
-			DB::raw('SUM(CASE WHEN work_orders.status = ' . WorkOrder::CANCELED . ' THEN work_orders.quantity END) as canceled_quantity')
+			DB::raw('COUNT(DISTINCT CASE WHEN wou.new_status = ' . WorkOrder::PENDING . ' THEN work_orders.id END) as pending_count'),
+			DB::raw('SUM(CASE WHEN wou.new_status = ' . WorkOrder::PENDING . ' THEN wou.quantity_processed END) as pending_quantity'),
+			DB::raw('COUNT(DISTINCT CASE WHEN wou.new_status = ' . WorkOrder::IN_PROGRESS . ' THEN work_orders.id END) as in_progress_count'),
+			DB::raw('SUM(CASE WHEN wou.new_status = ' . WorkOrder::IN_PROGRESS . ' THEN wou.quantity_processed END) as in_progress_quantity'),
+			DB::raw('COUNT(DISTINCT CASE WHEN wou.new_status = ' . WorkOrder::COMPLETED . ' THEN work_orders.id END) as completed_count'),
+			DB::raw('SUM(CASE WHEN wou.new_status = ' . WorkOrder::COMPLETED . ' THEN wou.quantity_processed END) as completed_quantity'),
+			DB::raw('COUNT(DISTINCT CASE WHEN wou.new_status = ' . WorkOrder::CANCELED . ' THEN work_orders.id END) as canceled_count'),
+			DB::raw('SUM(CASE WHEN wou.new_status = ' . WorkOrder::CANCELED . ' THEN wou.quantity_processed END) as canceled_quantity')
 		)
-			->leftJoin('work_orders', function ($join) {
-				$join->on('products.id', '=', 'work_orders.product_id')
-					->whereNull('work_orders.deleted_at');
-			})
+			->leftJoin('work_orders', 'products.id', '=', 'work_orders.product_id')
+			->leftJoin('work_order_updates as wou', 'work_orders.id', '=', 'wou.work_order_id')
+			->whereNull('products.deleted_at')
+			->whereNull('work_orders.deleted_at')
+			->whereNull('wou.deleted_at')
 			->groupBy('products.id', 'products.name')
 			->orderBy('products.name')
 			->paginate(10);
@@ -69,12 +52,16 @@ class ReportController extends Controller
 			->select(
 				'users.name as operator_name',
 				'products.name as product_name',
-				DB::raw('COUNT(DISTINCT CASE WHEN work_orders.status = ' . WorkOrder::COMPLETED . ' THEN work_orders.id END) as completed_orders'),
-				DB::raw('SUM(CASE WHEN work_orders.status = ' . WorkOrder::COMPLETED . ' THEN work_orders.quantity END) as completed_quantity')
+				DB::raw('COUNT(DISTINCT CASE WHEN wou.new_status = ' . WorkOrder::COMPLETED . ' THEN work_orders.id END) as completed_orders'),
+				DB::raw('SUM(CASE WHEN wou.new_status = ' . WorkOrder::COMPLETED . ' THEN wou.quantity_processed END) as completed_quantity')
 			)
 			->leftJoin('work_orders', function ($join) {
 				$join->on('users.id', '=', 'work_orders.user_id')
 					->whereNull('work_orders.deleted_at');
+			})
+			->leftJoin('work_order_updates as wou', function ($join) {
+				$join->on('work_orders.id', '=', 'wou.work_order_id')
+					->whereNull('wou.deleted_at');
 			})
 			->leftJoin('products', function ($join) {
 				$join->on('work_orders.product_id', '=', 'products.id')

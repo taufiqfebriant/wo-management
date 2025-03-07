@@ -1,14 +1,10 @@
 import { DataTable } from '@/components/ui/data-table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type PaginationResponse2, type WorkOrderSummary } from '@/types';
+import type { BreadcrumbItem, PaginationWithoutResource, SharedData, WorkOrderSummary } from '@/types';
 import { Head } from '@inertiajs/react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
-
-interface Props {
-  summary: PaginationResponse2<WorkOrderSummary>;
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -21,7 +17,11 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function WorkOrderSummaryReport({ summary }: Props) {
+type WorkOrderSummaryReportProps = SharedData & {
+  summary: PaginationWithoutResource<WorkOrderSummary>;
+};
+
+export default function WorkOrderSummaryReport(props: WorkOrderSummaryReportProps) {
   const columns = useMemo<ColumnDef<WorkOrderSummary>[]>(
     () => [
       {
@@ -66,12 +66,12 @@ export default function WorkOrderSummaryReport({ summary }: Props) {
 
         <div className="mt-6" />
 
-        <DataTable columns={columns} data={summary.data} />
+        <DataTable columns={columns} data={props.summary.data} />
 
         <div className="mt-4 flex justify-end">
           <Pagination className="mx-[unset] w-[unset]">
             <PaginationContent>
-              {summary.links.map((link) => (
+              {props.summary.links.map((link) => (
                 <PaginationItem key={link.label}>
                   <PaginationLink
                     href={link.url ?? '#'}
