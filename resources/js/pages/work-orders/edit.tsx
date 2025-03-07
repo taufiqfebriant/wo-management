@@ -223,9 +223,7 @@ export default function EditWorkOrder({
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href={route('work-orders.index')} prefetch>
-                Cancel
-              </Link>
+              <Link href={route('work-orders.index')}>Cancel</Link>
             </Button>
 
             <Button type="submit" disabled={processing}>

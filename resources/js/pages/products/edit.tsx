@@ -63,9 +63,7 @@ export default function EditProduct({ product }: { product: Product }) {
 
           <div className="flex justify-between">
             <Button variant="outline" asChild>
-              <Link href={route('products.index')} prefetch>
-                Cancel
-              </Link>
+              <Link href={route('products.index')}>Cancel</Link>
             </Button>
 
             <Button type="submit" disabled={processing}>

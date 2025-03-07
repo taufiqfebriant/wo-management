@@ -73,7 +73,6 @@ export default function OperatorPerformanceReport({ performance }: Props) {
                     isActive={link.active}
                     dangerouslySetInnerHTML={{ __html: link.label }}
                     size={link.label.toLowerCase().includes('previous') || link.label.toLowerCase().includes('next') ? 'default' : 'icon'}
-                    prefetch
                     {...(!link.url || link.active ? { as: 'button', disabled: true } : {})}
                   />
                 </PaginationItem>

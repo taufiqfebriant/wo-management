@@ -136,16 +136,12 @@ export default function WorkOrders() {
                 <DropdownMenuSeparator />
                 {auth.user.permissions.find((permission) => permission.name === 'read work order') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={route('work-orders.show', ctx.row.original.id)} prefetch>
-                      View Details
-                    </Link>
+                    <Link href={route('work-orders.show', ctx.row.original.id)}>View Details</Link>
                   </DropdownMenuItem>
                 ) : null}
                 {auth.user.permissions.find((permission) => permission.name === 'update work orders') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={route('work-orders.edit', ctx.row.original.id)} prefetch>
-                      Edit
-                    </Link>
+                    <Link href={route('work-orders.edit', ctx.row.original.id)}>Edit</Link>
                   </DropdownMenuItem>
                 ) : null}
                 {auth.user.permissions.find((permission) => permission.name === 'delete work orders') ? (
@@ -179,17 +175,13 @@ export default function WorkOrders() {
                 {auth.user.permissions.find((permission) => permission.name === 'update work order status') &&
                 ctx.row.original.status !== 'Completed' ? (
                   <DropdownMenuItem asChild>
-                    <Link href={route('work-orders.edit-status', ctx.row.original.id)} prefetch>
-                      Update Status
-                    </Link>
+                    <Link href={route('work-orders.edit-status', ctx.row.original.id)}>Update Status</Link>
                   </DropdownMenuItem>
                 ) : null}
                 {auth.user.permissions.find((permission) => permission.name === 'create work order progress notes') &&
                 ctx.row.original.status === 'In Progress' ? (
                   <DropdownMenuItem asChild>
-                    <Link href={route('work-orders.add-progress-note', ctx.row.original.id)} prefetch>
-                      Add Progress Note
-                    </Link>
+                    <Link href={route('work-orders.add-progress-note', ctx.row.original.id)}>Add Progress Note</Link>
                   </DropdownMenuItem>
                 ) : null}
               </DropdownMenuContent>
@@ -237,9 +229,7 @@ export default function WorkOrders() {
 
           {auth.user.permissions.find((permission) => permission.name === 'create work orders') ? (
             <Button asChild>
-              <Link href={route('work-orders.create')} prefetch>
-                Create
-              </Link>
+              <Link href={route('work-orders.create')}>Create</Link>
             </Button>
           ) : null}
         </div>
@@ -336,7 +326,6 @@ export default function WorkOrders() {
                     isActive={link.active}
                     dangerouslySetInnerHTML={{ __html: link.label }}
                     size={link.label.toLowerCase().includes('previous') || link.label.toLowerCase().includes('next') ? 'default' : 'icon'}
-                    prefetch
                     {...(!link.url || link.active ? { as: 'button', disabled: true } : {})}
                   />
                 </PaginationItem>

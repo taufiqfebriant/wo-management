@@ -81,16 +81,12 @@ export default function Products() {
                 <DropdownMenuSeparator />
                 {page.props.auth.user.permissions.find((permission) => permission.name === 'read product') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={route('products.show', ctx.row.original.id)} prefetch>
-                      View Details
-                    </Link>
+                    <Link href={route('products.show', ctx.row.original.id)}>View Details</Link>
                   </DropdownMenuItem>
                 ) : null}
                 {page.props.auth.user.permissions.find((permission) => permission.name === 'update products') ? (
                   <DropdownMenuItem asChild>
-                    <Link href={route('products.edit', ctx.row.original.id)} prefetch>
-                      Edit
-                    </Link>
+                    <Link href={route('products.edit', ctx.row.original.id)}>Edit</Link>
                   </DropdownMenuItem>
                 ) : null}
                 {page.props.auth.user.permissions.find((permission) => permission.name === 'delete products') ? (
@@ -143,9 +139,7 @@ export default function Products() {
 
           {page.props.auth.user.permissions.find((permission) => permission.name === 'create products') ? (
             <Button asChild>
-              <Link href={route('products.create')} prefetch>
-                Create
-              </Link>
+              <Link href={route('products.create')}>Create</Link>
             </Button>
           ) : null}
         </div>
@@ -164,7 +158,6 @@ export default function Products() {
                     isActive={link.active}
                     dangerouslySetInnerHTML={{ __html: link.label }}
                     size={link.label.toLowerCase().includes('previous') || link.label.toLowerCase().includes('next') ? 'default' : 'icon'}
-                    prefetch
                     {...(!link.url || link.active ? { as: 'button', disabled: true } : {})}
                   />
                 </PaginationItem>

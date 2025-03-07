@@ -152,9 +152,7 @@ export default function ShowWorkOrder({ workOrder }: { workOrder: WorkOrder }) {
         </Card>
 
         <Button variant="outline" asChild>
-          <Link href={route('work-orders.index')} prefetch>
-            Back
-          </Link>
+          <Link href={route('work-orders.index')}>Back</Link>
         </Button>
       </div>
     </AppLayout>

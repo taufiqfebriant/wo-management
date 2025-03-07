@@ -59,9 +59,7 @@ export default function ShowProduct({ product }: { product: Product }) {
         </Card>
 
         <Button variant="outline" asChild>
-          <Link href={route('products.index')} prefetch>
-            Back
-          </Link>
+          <Link href={route('products.index')}>Back</Link>
         </Button>
       </div>
     </AppLayout>
