@@ -80,6 +80,8 @@
     ./vendor/bin/sail npm run dev
     ```
 
+11. Visit [http://localhost](http://localhost) to view the application
+
 ## Stopping and Removing Docker Containers
 
 To stop Docker containers, run the following command:
